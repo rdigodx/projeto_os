@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cria um elemento de botão dinamicamente.
     // Fazer isso via JS garante que o botão só apareça se o script for executado com sucesso.
+    console.log('Token span:', tokenSpan);
+    console.log('Token text on load:', tokenSpan.innerText);
     const copyButton = document.createElement('button');
     // Adiciona classes CSS para estilizar o botão.
     copyButton.classList.add('btn', 'copy-btn');
