@@ -1,0 +1,60 @@
+<!-- Início do documento HTML -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OS Criada com Sucesso!</title>
+  <!-- Links para as folhas de estilo CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/sucesso.css">
+  <!-- Script da biblioteca canvas-confetti para o efeito de comemoração -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <!-- Link para a biblioteca de ícones Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <!-- Ícone da aba do navegador (favicon) -->
+  <link rel="icon" type="image/png" href="/images/logo.png">
+</head>
+<body>
+  <!-- Contêiner principal que centraliza o conteúdo na página -->
+  <main class="main-container">
+    <!-- Caixa de conteúdo central -->
+    <div class="content">
+      <!-- Ícone de sucesso -->
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <!-- Mensagens de confirmação -->
+      <div class="success-message">
+        <p>Ordem de Serviço criada com sucesso!</p>
+        <p>Guarde o token abaixo para acompanhar sua solicitação.</p>
+      </div>
+
+      <!-- Seção que exibe o token da OS -->
+      <div class="token-highlight">
+        <%# Tag EJS: Verifica se a variável 'token' foi passada pelo controller %>
+        <% if (token) { %>
+          <%# Tag EJS: Exibe o valor da variável 'token' dentro do span %>
+          <span id="token"><%= token %></span>
+          <!-- O botão de copiar será inserido aqui dinamicamente pelo sucessoScripts.js -->
+        <% } else { %>
+          <p class="error-message">Não foi possível recuperar o token.</p>
+        <% } %>
+      </div>
+
+      <!-- Mensagem do contador regressivo -->
+      <div class="countdown">
+        Você será redirecionado para a página inicial em <span>15</span> segundos.
+      </div>
+
+      <!-- Contêiner para o botão de ação -->
+      <div class="action-container">
+        <a href="/" class="botao-nav">Voltar ao Início</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Inclusão do script JavaScript específico para esta página -->
+  <script src="/js/sucessoScripts.js"></script>
+</body>
+</html>

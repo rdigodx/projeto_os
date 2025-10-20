@@ -1,0 +1,53 @@
+projeto-os/
+|
+├── server.js               # Arquivo principal (inicializa servidor e rotas)
+├── package.json            # Configurações do Node
+├── .env                    # Variáveis de ambiente (senha do BD, e-mail, etc)
+│
+├── config/
+│   └── db.js               # Conexão com MySQL
+│
+├── routes/                 # Rotas da aplicação
+│   ├── indexRoutes.js      # Rotas públicas (/ e /nova-os)
+│   ├── authRoutes.js       # Rotas de login/logout
+│   ├── painelRoutes.js     # Rotas do painel técnico
+│   ├── osRoutes.js         # Rotas para OS (fechar, anexos, etc)
+│   └── relatorioRoutes.js  # Relatórios mensais
+│
+├── controllers/            # Lógica das rotas
+│   ├── indexController.js
+│   ├── authController.js
+│   ├── painelController.js
+│   ├── osController.js
+│   └── relatorioController.js
+│
+├── models/                 # Queries SQL
+│   ├── usuarioModel.js
+│   ├── tecnicoModel.js
+│   ├── ordemModel.js
+│   └── anexoModel.js
+│
+├── middlewares/            # Funções intermediárias
+│   ├── authMiddleware.js   # Verifica se técnico está logado
+│   └── uploadMiddleware.js # Configuração do multer (upload de arquivos)
+│
+├── utils/                  # Funções auxiliares
+│   ├── email.js            # Envio de e-mail (nodemailer)
+│   └── excel.js            # Geração de relatórios em Excel
+│
+├── views/                  # Páginas (EJS ou HTML adaptado)
+│   ├── index.ejs
+│   ├── nova_os.ejs
+│   ├── sucesso.ejs
+│   ├── login.ejs
+│   └── painel.ejs
+│
+├── public/                 # Arquivos estáticos
+│   ├── css/
+│   │   ├── style.css
+│   │   └── painel.css
+│   └── js/
+│       └── scripts.js
+│
+├── uploads/                # Arquivos enviados nas OS
+└── reports/                # Relatórios gerados em Excel

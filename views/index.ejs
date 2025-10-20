@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Painel de Ordens de Serviço</title>
+  <link rel="stylesheet" href="/css/style.css" /> <!-- Contém todos os estilos -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="icon" type="image/png" href="/images/logo.png"/>
+</head>
+<body>
+<header>
+  <div class="header-container">
+    <a href="/"><img src="/images/logo.png" alt="Logo MBM Copy" class="logo"></a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="/nova_os" class="btn btn-success"><i class="fas fa-plus-circle"></i> Abrir Nova OS</a></li>
+        <li><a href="/login" class="btn btn-secondary"><i class="fas fa-sign-in-alt"></i> Login Técnico</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <h1><span>Bem-vindo ao Portal</span> de Chamados T.I MBM</h1>
+</div>
+
+<main class="main-container">
+  <div class="content">
+    <% if (messages && Object.keys(messages).length > 0) { %>
+      <% Object.keys(messages).forEach(function(type) { %>
+        <% messages[type].forEach(function(msg) { %>
+          <div class="messages-container">
+            <div class="message <%= type %>">
+              <i class="<%= type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle' %>"></i> <%= msg %>
+            </div>
+          </div>
+        <% }) %>
+      <% }) %>
+    <% } %>
+
+    <% if (ordem) { %>
+      <section class="ordem-detalhes">
+        <h2><i class="fas fa-info-circle"></i> Detalhes da sua OS</h2>
+
+        <div class="filtro-container">
+          <input type="text" id="filtro-os" placeholder="Filtrar detalhes da OS..." class="filtro-input"/>
+        </div>
+
+        <div class="os-item">
+          <p><strong><i class="fas fa-user"></i> Solicitante:</strong> <%= ordem.solicitante %></p>
+          <p><strong><i class="fas fa-building"></i> Setor:</strong> <%= ordem.setor %></p>
+          <p><strong><i class="fas fa-tools"></i> Tipo de Serviço:</strong> <%= ordem.tipo_servico %></p>
+          <p><strong><i class="fas fa-info-circle"></i> Status:</strong> <%= ordem.status %></p>
+          <p><strong><i class="fas fa-calendar"></i> Data de Criação:</strong> <%= new Date(ordem.data_criacao).toLocaleString("pt-BR") %></p>
+          <p><strong><i class="fas fa-key"></i> Token:</strong> <%= ordem.token %></p>
+        </div>
+      </section>
+    <% } else { %>
+      <section class="sem-ordem">
+        <p><i class="fas fa-info-circle"></i> BEM-VINDO! NÃO HÁ NENHUMA OS PARA EXIBIR NO MOMENTO</p>
+      </section>
+    <% } %>
+
+    <div class="nova-os-container">
+      <a href="/nova_os" class="btn btn-success">
+        <i class="fas fa-plus-circle"></i> Abrir Nova OS
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-container">MBM Copy - Sistema de OS</div>
+</footer>
+<script src="/js/indexScripts.js"></script>
+</body>
+</html>

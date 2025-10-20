@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Abrir Nova OS</title>
+    <link rel="stylesheet" href="/css/style.css" /> <!-- Estilos Globais -->
+    <link rel="stylesheet" href="/css/nova_os.css" /> <!-- Estilos da Página -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <h1>Abrir Nova Ordem de Serviço</h1>
+        <nav>
+          <div class="nav-container">
+            <a href="/"><i class="fas fa-home"></i> Home</a>
+            <a href="/login"
+              ><i class="fas fa-sign-in-alt"></i> Login Técnico</a
+            >
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main-container">
+      <div class="content">
+        <% if (messages && Object.keys(messages).length > 0) { %> <%
+        Object.keys(messages).forEach(function(type) { %> <%
+        messages[type].forEach(function(msg) { %>
+        <div class="messages-container">
+          <div class="message <%= type %>">
+            <i
+              class="<%= type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle' %>"
+            ></i>
+            <%= msg %>
+          </div>
+        </div>
+        <% }) %> <% }) %> <% } %>
+
+        <section class="form-container">
+          <form method="POST" action="/os/criar" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="nome" class="required"
+                ><i class="fas fa-user"></i> Nome do Solicitante:</label
+              >
+              <select id="nome" name="nome" required>
+                <option value="" disabled selected>
+                  Selecione o solicitante
+                </option>
+                <option value="Ana Júlia">Ana Júlia</option>
+                <option value="Ariana Lima">Ariana Lima</option>
+                <option value="Bárbara">Bárbara</option>
+                <option value="Betânia">Betânia</option>
+                <option value="Camila Fernandes">Camila Fernandes</option>
+                <option value="Camylla Cristina">Camylla Cristina</option>
+                <option value="Cléber Ramos">Cléber Ramos</option>
+                <option value="Dalma">Dalma</option>
+                <option value="Douglas">Douglas</option>
+                <option value="Emily">Emily</option>
+                <option value="Érica">Érica</option>
+                <option value="Erick Borges">Erick Borges</option>
+                <option value="Isabely">Isabely</option>
+                <option value="Ivoney Alves">Ivoney Alves</option>
+                <option value="Igor Alves">Igor Alves</option>
+                <option value="Ruan Teodoro">Juan Teodoro</option>
+                <option value="Leonardo">Leonardo</option>
+                <option value="Lizianne">Lizianne</option>
+                <option value="Mateus Lobato">Mateus Lobato</option>
+                <option value="Matheus Neves">Matheus Neves</option>
+                <option value="Miguel">Miguel</option>
+                <option value="Patrícia">Patrícia</option>
+                <option value="Paulo Faraone">Paulo Faraone</option>
+                <option value="Rafael">Rafael</option>
+                <option value="Ricardo Soares">Ricardo Soares</option>
+                <option value="Rayane">Rayane</option>
+                <option value="Vinícius">Vinícius</option>
+                <option value="Vitor Paulo">Vitor Paulo</option>
+                <option value="Willian Valério">Willian Valério</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="setor" class="required"
+                ><i class="fas fa-building"></i> Setor:</label
+              >
+              <select id="setor" name="setor" required>
+                <option value="" disabled selected>Selecione o setor</option>
+                <option value="Assistência Técnica">Assistência Técnica</option>
+                <option value="Comercial">Comercial</option>
+                <option value="Compras">Compras</option>
+                <option value="Diretoria">Diretoria</option>
+                <option value="Estoque">Estoque</option>
+                <option value="Faturamento">Faturamento</option>
+                <option value="Financeiro">Financeiro</option>
+                <option value="Recepção">Recepção</option>
+                <option value="Suporte Técnico">Suporte Técnico</option>
+                <option value="Vendas">Vendas</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="tipo_servico" class="required"
+                ><i class="fas fa-tools"></i> Tipo de Serviço:</label
+              >
+              <input
+                type="text"
+                id="tipo_servico"
+                name="tipo_servico"
+                required
+                placeholder="Ex: Manutenção, Software, Hardware..."
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="descricao" class="required"
+                ><i class="fas fa-file-alt"></i> Descrição do Problema:</label
+              >
+              <textarea
+                id="descricao"
+                name="descricao"
+                rows="4"
+                required
+                placeholder="Descreva detalhadamente o problema..."
+              ></textarea>
+              <span class="char-counter">0/500</span>
+            </div>
+
+            <div class="form-group">
+              <label for="email"
+                ><i class="fas fa-envelope"></i> E-mail para notificação
+                (opcional):</label
+              >
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="seu.email@empresa.com"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="arquivo"
+                ><i class="fas fa-paperclip"></i> Anexar Arquivo
+                (opcional):</label
+              >
+              <input
+                type="file"
+                id="arquivo"
+                name="anexos"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+                multiple
+              />
+              <div class="file-preview" id="filePreview" style="display: none">
+                Arquivo selecionado: <span id="fileName"></span>
+              </div>
+            </div>
+
+            <div class="btn-container">
+              <button type="submit" class="btn-submit">
+                <i class="fas fa-plus-circle"></i> Abrir OS
+              </button>
+          </form>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-container">MBM Copy - Sistema de OS</div>
+    </footer>
+    <script src="/js/nova_osScripts.js"></script>
+  </body>
+</html>

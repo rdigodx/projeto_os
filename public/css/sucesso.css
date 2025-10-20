@@ -1,0 +1,107 @@
+/* public/css/sucesso.css */
+
+/* Estiliza o contêiner principal da página. */
+main.main-container {
+  display: flex; /* Usa flexbox para facilitar o alinhamento. */
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Garante que o container ocupe toda a altura da tela */
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Estiliza a caixa de conteúdo central. */
+.content {
+  background-color: var(--cor-container);
+  padding: 2.5rem;
+  border-radius: var(--borda-radius);
+  box-shadow: var(--sombra-caixa);
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Ícone de sucesso (check-circle). */
+.success-icon {
+  font-size: 4rem;
+  color: var(--cor-sucesso);
+  margin-bottom: 1rem;
+}
+
+/* Mensagens de texto na caixa de sucesso. */
+.success-message p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.success-message p:first-child {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--cor-texto);
+  margin-bottom: 1.5rem;
+}
+
+/* Destaque para o token da OS. */
+.token-highlight {
+  background-color: #f0f0f0;
+  border: 2px dashed var(--cor-primaria);
+  border-radius: var(--borda-radius);
+  padding: 1rem;
+  margin: 1.5rem auto;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--cor-perigo);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  letter-spacing: 2px;
+}
+
+/* Estilo para o botão de "Copiar" que é criado dinamicamente via JS. */
+.copy-btn {
+  background-color: var(--cor-secundaria);
+  color: var(--cor-texto-claro);
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Efeito ao passar o mouse sobre o botão de copiar. */
+.copy-btn:hover {
+  background-color: var(--cor-primaria);
+  transform: translateY(-2px);
+}
+
+/* Mensagem do contador regressivo. */
+.countdown {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Contêiner para os botões de ação na parte inferior. */
+.action-container {
+  margin-top: 2rem;
+}
+
+/* Estilo para o botão de navegação "Voltar ao Início". */
+.botao-nav {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--borda-radius);
+  background-color: #6c757d; /* Cor secundária/cinza */
+  color: var(--cor-texto-claro);
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+/* Efeito ao passar o mouse sobre o botão de navegação. */
+.botao-nav:hover {
+  background-color: #5a6268;
+}

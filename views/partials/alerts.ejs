@@ -1,0 +1,40 @@
+<% if (messages && Object.keys(messages).length > 0) { %>
+  <% Object.keys(messages).forEach(function(type) { %>
+    <% messages[type].forEach(function(msg) { %>
+      <div class="alert alert-<%= type %>">
+        <%= msg %>
+        <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+      </div>
+    <% }); %>
+  <% }); %>
+<% } %>
+<% if (typeof token !== 'undefined') { %>
+  <div class="alert alert-success">
+    Sua Ordem de Serviço foi criada com sucesso! O token é: <strong><%= token %></strong>
+    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+  </div>
+<% } %>
+<% if (typeof warning !== 'undefined') { %>
+  <div class="alert alert-warning">
+    <%= warning %>
+    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+  </div>
+<% } %>
+<% if (typeof error !== 'undefined') { %>
+  <div class="alert alert-error">
+    <%= error %>
+    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+  </div>
+<% } %>
+<% if (typeof info !== 'undefined') { %>
+  <div class="alert alert-info">
+    <%= info %>
+    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+  </div>
+<% } %>
+<% if (typeof success !== 'undefined') { %>
+  <div class="alert alert-success">
+    <%= success %>
+    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+  </div>
+<% } %>

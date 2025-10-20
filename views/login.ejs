@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - Sistema de OS</title>
+  <link rel="stylesheet" href="/css/style.css" /> <!-- Estilos Globais -->
+  <link rel="stylesheet" href="/css/login.css" /> <!-- Estilos da Página -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+</head>
+<body>
+<header>
+  <div class="header-container">
+    <h1>Login Técnico</h1>
+    <nav>
+      <div class="nav-container">
+        <a href="/">Home</a>
+        <a href="/nova_os">Abrir Nova OS</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="login-form-container">
+    <img src="/images/logo.png" alt="Logo MBM Copy" class="login-logo">
+    <h2>Acesso Restrito</h2>
+
+    <%- include('partials/messages') %>
+
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <input type="text" id="usuario" name="usuario" placeholder="Usuário" required>
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="form-group">
+        <input type="password" id="senha" name="senha" placeholder="Senha" required>
+        <i class="fas fa-lock"></i>
+        <div id="capsAviso" class="caps-lock-aviso" style="display: none;">Caps Lock ativado!</div>
+        </div>
+      <button type="submit" class="btn-login">Entrar</button>
+    </form>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-container">MBM Copy - Sistema de OS</div>
+</footer>
+<script src="/js/loginScripts.js"></script>
+</body>
+</html>
