@@ -269,7 +269,7 @@ module.exports = {
   // Função para listar todas as OS (geralmente para uma API).
   listarOs: async (req, res) => {
     try {
-      const ordens = await OrdemModel.findAll();
+      const ordens = await OrdemModel.findByFiltro();
       res.json(ordens);
     } catch (err) {
       console.error('Erro ao listar OSs:', err);
