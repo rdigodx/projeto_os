@@ -7,8 +7,8 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const path = require('path');
 const helmet = require('helmet');
-const morgan = require('morgan');
 const favicon = require('serve-favicon');
+const { logger } = require('./utils/logger');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,6 +16,15 @@ const HOST = process.env.HOST || '0.0.0.0';
 const isProduction = process.env.NODE_ENV === 'production';
 
 // ------------------- MIDDLEWARES -------------------
+
+// Middleware de log de requisições com Winston
+app.use((req, res, next) => {
+  logger.info(`HTTP ${req.method} ${req.url}`, {
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+  });
+  next();
+});
 
 // Segurança de cabeçalhos HTTP (APENAS EM PRODUÇÃO)
 if (isProduction) {
@@ -32,7 +41,7 @@ if (isProduction) {
           ],
           styleSrc: [
             "'self'",
-            "'unsafe-inline'", // Necessário para alguns estilos inline
+            "'unsafe-inline'",
             'https://fonts.googleapis.com',
             'https://cdnjs.cloudflare.com',
             'https://cdn.datatables.net',
@@ -45,9 +54,6 @@ if (isProduction) {
     })
   );
 }
-
-// Logs de requisições
-app.use(morgan('dev'));
 
 // Servir arquivos estáticos (CSS, JS, imagens)
 app.use(express.static(path.join(__dirname, 'public')));
@@ -109,7 +115,7 @@ app.use((req, res) => {
 
 // Página 500
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Sempre loga o erro completo para depuração
+  logger.error(err.stack); // Sempre loga o erro completo para depuração
 
   // Em produção, envia uma mensagem genérica para o usuário.
   if (isProduction) {
@@ -121,9 +127,22 @@ app.use((err, req, res, next) => {
 });
 
 // ------------------- SERVIDOR -------------------
-app.listen(PORT, HOST, () => {
-  console.log(`Servidor rodando em http://${HOST}:${PORT}`);
+const server = app.listen(PORT, HOST, () => {
+  logger.info(`Servidor rodando em http://${HOST}:${PORT}`);
   if (!process.env.SECRET) {
-    console.warn('⚠️ AVISO: A variável de ambiente "SECRET" não está definida. A sessão não será segura em produção.');
+    logger.warn('AVISO: A variável de ambiente "SECRET" não está definida. A sessão não será segura em produção.');
   }
+});
+
+server.on('error', (error) => {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+
+  if (error.code === 'EADDRINUSE') {
+    logger.error(`A porta ${PORT} já está em uso. Verifique se outra instância do servidor ou outro programa está rodando.`);
+    process.exit(1);
+  }
+  throw error;
 });

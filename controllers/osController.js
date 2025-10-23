@@ -5,7 +5,7 @@ const fs = require('fs');
 // Importa a função de envio de e-mail do nosso utilitário.
 const { enviarEmail } = require('../utils/email');
 // Importa a função de log de auditoria.
-const { logAuditoria } = require('../utils/logger');
+const { logger, logAuditoria } = require('../utils/logger');
 // Importa os modelos de dados para interagir com o banco.
 const OrdemModel = require('../models/ordemModel');
 const UsuarioModel = require('../models/usuarioModel');
@@ -95,8 +95,8 @@ module.exports = {
         `;
         // Chama a função de envio de e-mail (não bloqueia a execução principal).
         enviarEmail([emailDestinatario], `Nova OS #${os.token} Criada`, corpoEmailSolicitante)
-          .then(() => console.log(`📧 E-mail de confirmação enviado para o solicitante: ${emailDestinatario}`))
-          .catch(err => console.error('Erro ao enviar e-mail para o solicitante:', err));
+          .then(() => logger.info(`E-mail de confirmação enviado para o solicitante: ${emailDestinatario}`))
+          .catch(err => logger.error('Erro ao enviar e-mail para o solicitante:', err));
       }
 
       // Prepara o corpo do e-mail de notificação para a equipe técnica.
@@ -131,8 +131,8 @@ module.exports = {
       // Se houver destinatários, envia o e-mail para a equipe.
       if (destinatariosTecnicos.length > 0) {
         enviarEmail(destinatariosTecnicos, `[NOVA OS] #${os.token} - ${tipo_servico}`, corpoEmailTecnicos)
-          .then(() => console.log(`📧 E-mail de notificação enviado para a equipe técnica.`))
-          .catch(err => console.error('Erro ao enviar e-mail para a equipe técnica:', err));
+          .then(() => logger.info(`E-mail de notificação enviado para a equipe técnica.`))
+          .catch(err => logger.error('Erro ao enviar e-mail para a equipe técnica:', err));
       }
 
       // Armazena o token da OS recém-criada na sessão do usuário.
@@ -146,7 +146,7 @@ module.exports = {
 
     } catch (err) {
       // Se ocorrer qualquer erro durante o processo.
-      console.error('Erro ao criar OS:', err);
+      logger.error('Erro ao criar OS:', err);
       req.flash('danger', 'Erro ao criar a OS.');
       res.redirect('/nova_os');
     }
@@ -185,15 +185,15 @@ module.exports = {
       // Se o solicitante tiver um e-mail cadastrado, envia a notificação.
       if (os.email_solicitante) {
         enviarEmail([os.email_solicitante], `OS #${os.token} Concluída`, corpoEmail)
-          .then(() => console.log(`📧 E-mail de conclusão enviado para ${os.email_solicitante}`))
-          .catch(err => console.error('Erro ao enviar e-mail de conclusão:', err));
+          .then(() => logger.info(`E-mail de conclusão enviado para ${os.email_solicitante}`))
+          .catch(err => logger.error('Erro ao enviar e-mail de conclusão:', err));
       }
 
       // Exibe mensagem de sucesso e redireciona para o painel.
       req.flash('success', 'OS fechada com sucesso.');
       res.redirect('/painel');
     } catch (err) {
-      console.error('Erro ao fechar OS:', err);
+      logger.error('Erro ao fechar OS:', err);
       req.flash('danger', 'Erro ao fechar OS.');
       res.redirect('/painel');
     }
@@ -215,7 +215,7 @@ module.exports = {
       // Inicia o download do arquivo, usando o nome original.
       res.download(caminho, arquivo.nome_arquivo);
     } catch (err) {
-      console.error('Erro ao baixar anexo:', err);
+      logger.error('Erro ao baixar anexo:', err);
       res.status(500).send('Erro ao baixar anexo');
     }
   },
@@ -232,7 +232,7 @@ module.exports = {
       req.flash('success', 'OS editada com sucesso.');
       res.redirect('/painel');
     } catch (err) {
-      console.error('Erro ao editar OS:', err);
+      logger.error('Erro ao editar OS:', err);
       req.flash('danger', 'Erro ao editar OS.');
       res.redirect('/painel');
     }
@@ -260,20 +260,9 @@ module.exports = {
       req.flash('success', 'OS e seus anexos excluídos com sucesso.');
       res.redirect('/painel');
     } catch (err) {
-      console.error('Erro ao excluir OS:', err);
+      logger.error('Erro ao excluir OS:', err);
       req.flash('danger', 'Erro ao excluir OS.');
       res.redirect('/painel');
     }
   },
-
-  // Função para listar todas as OS (geralmente para uma API).
-  listarOs: async (req, res) => {
-    try {
-      const ordens = await OrdemModel.findByFiltro();
-      res.json(ordens);
-    } catch (err) {
-      console.error('Erro ao listar OSs:', err);
-      res.status(500).json({ error: 'Erro ao listar OSs' });
-    }
-  }
 };

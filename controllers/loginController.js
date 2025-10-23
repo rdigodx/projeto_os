@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 // Importa o modelo de dados do Técnico para interagir com o banco de dados.
 const TecnicoModel = require('../models/tecnicoModel');
 // Importa a função de log de auditoria para registrar eventos importantes.
-const { logAuditoria } = require('../utils/logger');
+const { logger, logAuditoria } = require('../utils/logger');
 
 // Objeto para controlar as tentativas de login em memória. A chave é uma combinação de usuário e IP.
 let tentativasLogin = {};
@@ -14,8 +14,8 @@ const BLOQUEIO_MINUTOS = 10;
 
 // Função para exibir a página de login.
 exports.showLogin = (req, res) => {
-  // Renderiza a view 'login.ejs' e passa as mensagens flash (de erro ou sucesso) para a página.
-  res.render('login', { messages: req.flash() });
+  // Apenas renderiza a view 'login.ejs'. As mensagens flash já estão disponíveis em res.locals.messages
+  res.render('login');
 };
 
 // Função para processar a tentativa de login.
@@ -97,7 +97,7 @@ exports.login = async (req, res) => {
   } catch (err) {
     // Em caso de erro no servidor.
     logAuditoria('Erro no login', req.body.usuario || 'desconhecido');
-    console.error('Erro no login:', err);
+    logger.error('Erro no login:', err);
     req.flash('error', 'Ocorreu um erro ao tentar fazer o login.');
     res.redirect('/login');
   }

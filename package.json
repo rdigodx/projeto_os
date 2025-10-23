@@ -22,7 +22,8 @@
     "mysql2": "^3.6.5",
     "nodemailer": "^7.0.9",
     "serve-favicon": "^2.5.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",

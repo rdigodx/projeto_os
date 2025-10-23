@@ -1,3 +1,4 @@
+const { logger } = require('../utils/logger');
 const UsuarioModel = require('../models/usuarioModel');
 const OrdemModel = require('../models/ordemModel');
 
@@ -11,7 +12,7 @@ exports.index = async (req, res) => {
       messages: req.flash()
     });
   } catch (err) {
-    console.error('Erro ao carregar página inicial:', err);
+    logger.error('Erro ao carregar página inicial:', err);
     req.flash('danger', 'Erro ao carregar página inicial.');
     res.render('index', { usuarios: [], ordem: null, messages: req.flash() });
   }
@@ -33,7 +34,7 @@ exports.ordenar = async (req, res) => {
       messages: req.flash()
     });
   } catch (err) {
-    console.error('Erro ao ordenar usuários:', err);
+    logger.error('Erro ao ordenar usuários:', err);
     req.flash('danger', 'Erro ao ordenar usuários.');
     res.redirect('/');
   }
@@ -54,7 +55,18 @@ exports.paginaNaoEncontrada = (req, res) => {
 
 // Tratamento de erro 500
 exports.erroServidor = (err, req, res, next) => {
-  console.error('Erro no servidor:', err);
+  logger.error('Erro no servidor:', err);
   req.flash('danger', 'Erro no servidor.');
   res.redirect('/');
+};
+
+// Função para listar todas as OS para a API pública.
+exports.listarOs = async (req, res) => {
+  try {
+    const ordens = await OrdemModel.findByFiltro();
+    res.json(ordens);
+  } catch (err) {
+    logger.error('Erro ao listar OSs para a API:', err);
+    res.status(500).json({ error: 'Erro ao listar OSs' });
+  }
 };

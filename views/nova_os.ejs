@@ -28,18 +28,7 @@
 
     <main class="main-container">
       <div class="content">
-        <% if (messages && Object.keys(messages).length > 0) { %> <%
-        Object.keys(messages).forEach(function(type) { %> <%
-        messages[type].forEach(function(msg) { %>
-        <div class="messages-container">
-          <div class="message <%= type %>">
-            <i
-              class="<%= type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle' %>"
-            ></i>
-            <%= msg %>
-          </div>
-        </div>
-        <% }) %> <% }) %> <% } %>
+        <%- include('partials/alerts') %>
 
         <section class="form-container">
           <form method="POST" action="/os/criar" enctype="multipart/form-data">

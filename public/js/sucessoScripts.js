@@ -16,12 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Verifica se os elementos para o token existem na página.
   if (tokenHighlight && tokenSpan) {
     // Pega o texto do token e remove espaços em branco extras.
-    const token = tokenSpan.innerText.trim();
+    const token = tokenSpan.textContent.trim();
 
     // Cria um elemento de botão dinamicamente.
     // Fazer isso via JS garante que o botão só apareça se o script for executado com sucesso.
     console.log('Token span:', tokenSpan);
-    console.log('Token text on load:', tokenSpan.innerText);
+    console.log('Token text on load:', tokenSpan.textContent);
     const copyButton = document.createElement('button');
     // Adiciona classes CSS para estilizar o botão.
     copyButton.classList.add('btn', 'copy-btn');

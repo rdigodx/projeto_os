@@ -13,7 +13,4 @@ router.get('/baixar-anexo/:arquivoId', isAuth, osController.baixarAnexo);
 router.post('/editar/:id', isAuth, osController.editarOs);
 router.post('/excluir/:id', isAuth, osController.excluirOs);
 
-// Listar todas as OS em JSON (agora protegida por autenticação)
-router.get('/listar', isAuth, osController.listarOs);
-
 module.exports = router;

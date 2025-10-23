@@ -7,7 +7,7 @@ const { gerarExcelCompleto } = require('../utils/excel');
 // Importa a função para enviar e-mails.
 const { enviarEmail } = require('../utils/email');
 // Importa a função de log de auditoria.
-const { logAuditoria } = require('../utils/logger');
+const { logger, logAuditoria } = require('../utils/logger');
 // Importa os modelos de dados para buscar informações no banco.
 const OrdemModel = require('../models/ordemModel');
 const AnexoModel = require('../models/anexoModel');
@@ -83,7 +83,7 @@ exports.gerar = async (req, res) => {
     res.redirect('/painel');
   } catch (err) {
     // Em caso de erro, registra no console e no log de auditoria.
-    console.error('Erro ao gerar relatório:', err);
+    logger.error('Erro ao gerar relatório:', err);
     logAuditoria('Erro ao gerar relatório', usuario.usuario);
     req.flash('danger', 'Erro ao gerar o relatório.');
     res.redirect('/painel');
