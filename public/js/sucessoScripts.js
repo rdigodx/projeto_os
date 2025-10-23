@@ -28,8 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Define o conteúdo HTML do botão (ícone + texto).
     copyButton.innerHTML = '<i class="fas fa-copy"></i> Copiar';
 
-    // Adiciona o botão recém-criado dentro do contêiner do token.
-    tokenHighlight.appendChild(copyButton);
+    // Cria um novo contêiner flex para o token e o botão.
+    const tokenContainer = document.createElement('div');
+    tokenContainer.className = 'token-container';
+    tokenHighlight.innerHTML = ''; // Limpa o contêiner principal.
+    tokenHighlight.append(tokenContainer); // Adiciona o novo contêiner.
 
     // Adiciona um ouvinte de evento para o clique no botão.
     copyButton.addEventListener('click', () => {
@@ -64,6 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
       });
     });
+
+    // Move o span do token e o botão para dentro do novo contêiner.
+    // Isso garante o alinhamento correto e o espaçamento definido em '.token-container'.
+    tokenContainer.append(tokenSpan, copyButton);
   }
 
   // --- Contador Regressivo para Redirecionamento ---

@@ -50,11 +50,18 @@ main.main-container {
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--cor-perigo);
-  display: flex;
-  justify-content: center;
+  display: flex; /* Mantém o flexbox */
+  justify-content: center; /* Centraliza o conteúdo interno */
   align-items: center;
   gap: 1rem;
   letter-spacing: 2px;
+}
+
+/* Adiciona um contêiner para o span do token para melhor controle de alinhamento */
+.token-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Espaçamento entre o token e o botão */
 }
 
 /* Estilo para o botão de "Copiar" que é criado dinamicamente via JS. */

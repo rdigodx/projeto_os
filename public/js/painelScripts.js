@@ -1,5 +1,18 @@
 // Executa o script quando o conteúdo do DOM estiver completamente carregado.
 document.addEventListener('DOMContentLoaded', () => {
+  // ----- Lógica para Fechar Mensagens de Feedback (Alertas) -----
+  // Adiciona um evento de clique a todos os botões de fechar nos alertas.
+  document.querySelectorAll('.message-close-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      // 'this' se refere ao botão clicado.
+      // 'closest' encontra o elemento pai mais próximo que corresponde ao seletor '.message'.
+      const messageContainer = this.closest('.message');
+      if (messageContainer) {
+        messageContainer.style.display = 'none'; // Esconde o alerta.
+      }
+    });
+  });
+
   // ----- Lógica para os Modais de "Fechar OS" -----
   // Adiciona um evento de clique a todos os botões de fechar (o 'X').
   document.querySelectorAll('.fechar').forEach(span => {
@@ -44,8 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Dados para o gráfico de barras dos top 5 usuários.
-  const labelsUsuarios = usuariosTop5.map(u => u.nome);
-  const dataUsuarios = usuariosTop5.map(u => u.total);
+  const labelsUsuarios = usuariosTop5.map(u => u.nome); // Usar const para consistência
+  const dataUsuarios = usuariosTop5.map(u => u.total); // Usar const para consistência
 
   // Cria o gráfico de barras.
   const ctxUsuarios = document.getElementById('graficoUsuarios').getContext('2d');
@@ -104,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title: "Status", 
         field: "status", 
         hozAlign: "center", 
-        headerFilter: "select", // Adiciona um filtro de seleção no cabeçalho.
+        headerFilter: "list", // A propriedade "select" foi depreciada. "list" é a correta.
         headerFilterParams: { values: true }, // Popula o filtro com os valores existentes na coluna.
         formatter: function(cell) { // 'formatter' personaliza como o valor da célula é exibido.
           const status = cell.getValue();
@@ -153,12 +166,14 @@ document.addEventListener('DOMContentLoaded', () => {
           // Se a OS não estiver 'Concluída', mostra o botão para fechar.
           if (os.status !== 'Concluída') {
             const button = document.createElement('button');
-            button.innerHTML = '<i class="fas fa-check"></i> Fechar OS';
+            button.innerHTML = '<i class="fas fa-check"></i> Fechar OS'; // Usar innerHTML é aceitável aqui, mas textContent é mais seguro se não precisar de HTML.
             button.classList.add('btn', 'btn-success');
-            // Define a ação de clique do botão para abrir o modal correspondente.
-            button.onclick = function() {
+            
+            // Usar addEventListener é uma prática mais moderna e robusta que 'onclick'.
+            button.addEventListener('click', (e) => {
+              e.stopPropagation(); // Impede que eventos de clique na linha da tabela sejam disparados.
               document.getElementById(`modal-${os.id}`).style.display = 'flex'; // Alterado para 'flex' para centralizar corretamente
-            };
+            });
             return button;
           }
           return '<strong><i class="fas fa-check-circle"></i> Finalizada</strong>';
