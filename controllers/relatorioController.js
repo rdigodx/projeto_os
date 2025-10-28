@@ -17,6 +17,7 @@ exports.gerar = async (req, res) => {
   // Extrai 'mes' e 'ano' do corpo da requisição (enviados pelo formulário).
   const { mes, ano } = req.body;
   // Identifica o usuário que solicitou o relatório a partir da sessão.
+  let filePath; // Declara filePath fora do bloco try para garantir que esteja acessível no finally
   const usuario = req.session.tecnico || 'desconhecido';
   
   try {
@@ -37,8 +38,8 @@ exports.gerar = async (req, res) => {
 
     // Define o nome do arquivo do relatório e seu caminho completo.
     const nomeArquivo = `Relatorio_OS_${mes}_${ano}.xlsx`;
-    const filePath = path.join(dir, nomeArquivo);
-
+    filePath = path.join(dir, nomeArquivo); // Atribui valor à variável declarada
+    
     // Chama a função utilitária para gerar o arquivo Excel com os dados das OS e seus anexos.
     await gerarExcelCompleto(dados, anexosPorOs, filePath, mes, ano);
 
@@ -87,5 +88,16 @@ exports.gerar = async (req, res) => {
     logAuditoria('Erro ao gerar relatório', usuario.usuario);
     req.flash('danger', 'Erro ao gerar o relatório.');
     res.redirect('/painel');
+  }
+  finally {
+    // Garante que o arquivo temporário seja excluído, mesmo em caso de erro.
+    if (fs.existsSync(filePath)) {
+      try {
+        fs.unlinkSync(filePath);
+        logger.info(`Arquivo temporário ${filePath} excluído com sucesso.`);
+      } catch (unlinkErr) {
+        logger.error(`Erro ao excluir arquivo temporário ${filePath}:`, unlinkErr);
+      }
+    }
   }
 };

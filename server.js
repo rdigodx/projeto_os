@@ -19,8 +19,10 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware de log de requisições com Winston
 app.use((req, res, next) => {
+  const serviceName = process.env.SERVICE_NAME || 'os-service'; // Define o nome do serviço, pode ser configurado via .env
   logger.info(`HTTP ${req.method} ${req.url}`, {
     ip: req.ip,
+    service: serviceName, // Adiciona o nome do serviço ao log
     userAgent: req.get('User-Agent'),
   });
   next();
@@ -93,6 +95,7 @@ app.set('view engine', 'ejs');
 
 // ------------------- ROTAS -------------------
 app.use('/', require('./routes/indexRoutes'));
+// Adicione esta linha para que o Express confie nos cabeçalhos de proxy (se estiver usando um proxy reverso)
 // Rotas de autenticação
 const authRoutes = require('./routes/loginRoutes');
 app.use('/login', authRoutes);
@@ -129,8 +132,13 @@ app.use((err, req, res, next) => {
 // ------------------- SERVIDOR -------------------
 const server = app.listen(PORT, HOST, () => {
   logger.info(`Servidor rodando em http://${HOST}:${PORT}`);
+  // Melhoria: Em produção, o SECRET deve ser obrigatório para a segurança da sessão.
   if (!process.env.SECRET) {
-    logger.warn('AVISO: A variável de ambiente "SECRET" não está definida. A sessão não será segura em produção.');
+    const secretWarning = 'ERRO CRÍTICO: A variável de ambiente "SECRET" não está definida. A sessão NÃO será segura.';
+    logger.error(secretWarning);
+    if (isProduction) {
+      process.exit(1); // Encerrar a aplicação em produção se o SECRET não estiver definido
+    }
   }
 });
 
