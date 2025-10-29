@@ -14,7 +14,7 @@ if (filtroInput) {
 
 // Atualização automática
 setInterval(function() {
-  fetch('/os/listar') // ✅ agora existe
+  fetch('/os/listar') 
     .then(response => response.json())
     .then(data => {
       console.log('Atualização de OS:', data);

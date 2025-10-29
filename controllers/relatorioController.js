@@ -1,47 +1,38 @@
-// Importa o módulo 'path' para lidar com caminhos de arquivos.
 const path = require('path');
-// Importa o módulo 'fs' (File System) para interagir com o sistema de arquivos.
 const fs = require('fs');
-// Importa a função utilitária que gera o arquivo Excel.
 const { gerarExcelCompleto } = require('../utils/excel');
-// Importa a função para enviar e-mails.
 const { enviarEmail } = require('../utils/email');
-// Importa a função de log de auditoria.
 const { logger, logAuditoria } = require('../utils/logger');
-// Importa os modelos de dados para buscar informações no banco.
 const OrdemModel = require('../models/ordemModel');
 const AnexoModel = require('../models/anexoModel');
 
 // Função assíncrona que gera o relatório de OS para um mês e ano específicos.
 exports.gerar = async (req, res) => {
-  // Extrai 'mes' e 'ano' do corpo da requisição (enviados pelo formulário).
-  const { mes, ano } = req.body;
-  // Identifica o usuário que solicitou o relatório a partir da sessão.
-  let filePath; // Declara filePath fora do bloco try para garantir que esteja acessível no finally
-  const usuario = req.session.tecnico || 'desconhecido';
-  
-  try {
-    // Busca no banco de dados todas as ordens de serviço para o mês e ano especificados.
-    const dados = await OrdemModel.findByPeriodo(mes, ano);
 
-    // Cria um objeto para armazenar os anexos de cada OS.
+  const { mes, ano } = req.body;
+  let filePath;
+  const usuario = req.session.tecnico || 'desconhecido';
+
+  try {
+    const dados = await OrdemModel.findByPeriodo(mes, ano);
     const anexosPorOs = {};
+
     // Itera sobre cada OS encontrada para buscar seus respectivos anexos.
     for (let os of dados) {
       anexosPorOs[os.id] = await AnexoModel.findByOsId(os.id);
     }
-
-    // Define o diretório onde os relatórios serão salvos.
     const dir = path.join(__dirname, '..', 'reports');
+
     // Se o diretório não existir, ele é criado.
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-    // Define o nome do arquivo do relatório e seu caminho completo.
+
     const nomeArquivo = `Relatorio_OS_${mes}_${ano}.xlsx`;
-    filePath = path.join(dir, nomeArquivo); // Atribui valor à variável declarada
-    
+    filePath = path.join(dir, nomeArquivo);
+
     // Chama a função utilitária para gerar o arquivo Excel com os dados das OS e seus anexos.
     await gerarExcelCompleto(dados, anexosPorOs, filePath, mes, ano);
+
 
     // Obtém o nome do mês por extenso para usar no e-mail.
     const nomeMes = new Date(ano, mes - 1).toLocaleString('pt-BR', { month: 'long' });
@@ -63,9 +54,8 @@ exports.gerar = async (req, res) => {
         <p>Atenciosamente,<br>Sistema de OS - MBM Copy</p>
       </div>
     `;
-    
+
     // Envia o e-mail para os administradores, anexando o arquivo Excel gerado.
-    // Os e-mails dos administradores são lidos das variáveis de ambiente.
     await enviarEmail(
       [
         process.env.EMAIL_ADMIN_1 || 'depto.ti1@mbmcopy.com.br',

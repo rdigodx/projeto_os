@@ -1,38 +1,37 @@
-/* public/css/login.css */
+/* Estilos para a página de login */
 
-/* Make the body a flex container to stack header, main, footer */
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Ensure body takes full viewport height */
-  background-color: var(--cor-fundo); /* Use global background */
-  background-image: 
+  min-height: 100vh;
+  background-color: var(--cor-fundo);
+  background-image:
     linear-gradient(rgba(245, 245, 245, 0.8), rgba(245, 245, 245, 0.8)),
-    url('/images/background.jpg'); /* Example subtle background */
+    url('/images/background.jpg');
   background-size: cover;
   background-position: center;
 }
 
-/* Main content area should grow and center its children */
+
 main {
-  flex-grow: 1; /* Allow main to grow and fill space */
+  flex-grow: 1;
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  padding: 2rem; /* Add some padding around the form */
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
 }
 
-/* The login form container itself */
+
 .login-form-container {
-  max-width: 450px; /* Max width for the form */
-  width: 100%; /* Take full width up to max-width */
+  max-width: 450px;
+  width: 100%;
   padding: 2.5rem;
-  background-color: #cccccc; /* Um cinza bem claro, um pouco mais escuro que o branco */
+  background-color: #cccccc;
   border-radius: var(--borda-radius);
   box-shadow: var(--sombra-caixa);
   text-align: center;
-  margin: 0; /* Reset margin as parent flex handles centering */
-  animation: fadeIn 0.5s ease-in-out; /* Subtle entrance animation */
+  margin: 0;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 @keyframes fadeIn {
@@ -40,6 +39,7 @@ main {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -73,7 +73,7 @@ main {
 
 .form-group input {
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.5rem; /* Space for the icon */
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
   border: 1px solid #ccc;
   border-radius: var(--borda-radius);
   font-size: 1rem;
@@ -86,14 +86,13 @@ main {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-.form-group input:focus + i {
+.form-group input:focus+i {
   color: var(--cor-primaria);
 }
 
-/* Estilo para o aviso de Caps Lock */
 .caps-lock-aviso {
-  position: absolute; /* Impede que o aviso empurre outros elementos */
-  bottom: -1.4rem; /* Posiciona abaixo do campo de senha */
+  position: absolute;
+  bottom: -1.4rem;
   left: 0;
   font-size: 0.85rem;
   color: var(--cor-perigo);

@@ -6,14 +6,11 @@ const fs = require('fs');
 // Configura onde os arquivos serão salvos e como serão nomeados
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Pasta 'uploads' na raiz do projeto
     const dir = path.join(__dirname, '..', 'uploads');
-    // Cria a pasta caso não exista
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
   filename: (req, file, cb) => {
-    // Gera nome único para evitar sobrescrita (timestamp + número aleatório + extensão)
     const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
     cb(null, uniqueName);
   }
@@ -32,10 +29,8 @@ const fileFilter = (req, file, cb) => {
   ];
   
   if (allowedTypes.includes(file.mimetype)) {
-    // Permite o arquivo
     cb(null, true);
   } else {
-    // Rejeita com erro explicativo
     cb(new Error('Tipo de arquivo não suportado. Apenas PDF, imagens e documentos são permitidos.'), false);
   }
 };

@@ -3,12 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ----- Lógica para Fechar Mensagens de Feedback (Alertas) -----
   // Adiciona um evento de clique a todos os botões de fechar nos alertas.
   document.querySelectorAll('.message-close-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      // 'this' se refere ao botão clicado.
-      // 'closest' encontra o elemento pai mais próximo que corresponde ao seletor '.message'.
+    button.addEventListener('click', function () {
+
       const messageContainer = this.closest('.message');
       if (messageContainer) {
-        messageContainer.style.display = 'none'; // Esconde o alerta.
+        messageContainer.style.display = 'none';
       }
     });
   });
@@ -17,9 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Adiciona um evento de clique a todos os botões de fechar (o 'X').
   document.querySelectorAll('.fechar').forEach(span => {
     span.addEventListener('click', () => {
-      // Pega o ID da OS a partir do atributo 'data-id' do botão.
+
       const id = span.dataset.id;
-      // Esconde o modal correspondente.
+
       document.getElementById(`modal-${id}`).style.display = 'none';
     });
   });
@@ -45,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       datasets: [{
         label: 'Total',
         data: dataStatus,
-        // As cores são pegas das variáveis CSS para consistência com o tema.
+
         backgroundColor: [
           getComputedStyle(document.documentElement).getPropertyValue('--cor-sucesso'),      // Nova
           '#ffc107', // Pendente
@@ -57,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Dados para o gráfico de barras dos top 5 usuários.
-  const labelsUsuarios = usuariosTop5.map(u => u.nome); // Usar const para consistência
-  const dataUsuarios = usuariosTop5.map(u => u.total); // Usar const para consistência
+  const labelsUsuarios = usuariosTop5.map(u => u.nome);
+  const dataUsuarios = usuariosTop5.map(u => u.total);
 
   // Cria o gráfico de barras.
   const ctxUsuarios = document.getElementById('graficoUsuarios').getContext('2d');
@@ -72,7 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
         backgroundColor: 'rgba(0, 102, 204, 0.7)'
       }]
     },
-    // Opções do gráfico, como iniciar o eixo Y em zero.
     options: { scales: { y: { beginAtZero: true } } }
   });
 
@@ -86,9 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
       body.classList.add('dark-mode');
       toggleButton.innerHTML = '<i class="fas fa-sun"></i>';
     }
-    // Adiciona o evento de clique ao botão.
+
     toggleButton.addEventListener('click', () => {
-      // Alterna a classe 'dark-mode' no body.
+
       body.classList.toggle('dark-mode');
       // Salva o estado atual no localStorage.
       localStorage.setItem('dark-mode', body.classList.contains('dark-mode'));
@@ -113,13 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // Cada objeto representa uma coluna.
       { title: "ID", field: "id", width: 80, hozAlign: "center", headerFilter: "input" },
       { title: "Token", field: "token", width: 120, headerFilter: "input" },
-      { 
-        title: "Status", 
-        field: "status", 
-        hozAlign: "center", 
+      {
+        title: "Status",
+        field: "status",
+        hozAlign: "center",
         headerFilter: "list", // A propriedade "select" foi depreciada. "list" é a correta.
         headerFilterParams: { values: true }, // Popula o filtro com os valores existentes na coluna.
-        formatter: function(cell) { // 'formatter' personaliza como o valor da célula é exibido.
+        formatter: function (cell) { // 'formatter' personaliza como o valor da célula é exibido.
           const status = cell.getValue();
           // Retorna um HTML customizado para o status.
           return `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
@@ -129,11 +127,11 @@ document.addEventListener('DOMContentLoaded', () => {
       { title: "Setor", field: "setor", headerFilter: "input" },
       { title: "Tipo Serviço", field: "tipo_servico", minWidth: 150 },
       { title: "Descrição", field: "descricao", minWidth: 200, tooltip: true },
-      { 
+      {
         title: "Data Criação",
-        field: "data_criacao", 
+        field: "data_criacao",
         hozAlign: "center",
-        formatter: function(cell) {
+        formatter: function (cell) {
           const data = cell.getValue();
           return data ? new Date(data).toLocaleString('pt-BR') : '';
         }
@@ -144,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
         title: "Anexos",
         field: "anexos",
         headerSort: false, // Desabilita a ordenação para esta coluna.
-        formatter: function(cell) {
+        formatter: function (cell) {
           const anexos = cell.getValue();
           if (anexos && anexos.length > 0) {
             let links = '<ul>';
@@ -161,14 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
         title: "Ações",
         hozAlign: "center",
         headerSort: false,
-        formatter: function(cell) { // Formata a célula de ações.
+        formatter: function (cell) { // Formata a célula de ações.
           const os = cell.getRow().getData();
           // Se a OS não estiver 'Concluída', mostra o botão para fechar.
           if (os.status !== 'Concluída') {
             const button = document.createElement('button');
             button.innerHTML = '<i class="fas fa-check"></i> Fechar OS'; // Usar innerHTML é aceitável aqui, mas textContent é mais seguro se não precisar de HTML.
             button.classList.add('btn', 'btn-success');
-            
+
             // Usar addEventListener é uma prática mais moderna e robusta que 'onclick'.
             button.addEventListener('click', (e) => {
               e.stopPropagation(); // Impede que eventos de clique na linha da tabela sejam disparados.
@@ -182,24 +180,24 @@ document.addEventListener('DOMContentLoaded', () => {
     ],
     locale: "pt-br", // Define o idioma da tabela para português do Brasil.
     // Objeto de tradução para os textos da interface do Tabulator.
-    langs:{
-        "pt-br":{
-            "headerFilters":{
-                "default":"Filtrar...", // Texto padrão para os campos de filtro.
-            },
-            "pagination":{
-                "page_size":"Itens por página", // Rótulo para o seletor de tamanho da página.
-                "page_title":"Mostrar página",
-                "first":"Primeira",
-                "first_title":"Primeira Página",
-                "last":"Última",
-                "last_title":"Última Página",
-                "prev":"Anterior",
-                "prev_title":"Página Anterior",
-                "next":"Próxima",
-                "next_title":"Próxima Página",
-            }
+    langs: {
+      "pt-br": {
+        "headerFilters": {
+          "default": "Filtrar...", // Texto padrão para os campos de filtro.
+        },
+        "pagination": {
+          "page_size": "Itens por página", // Rótulo para o seletor de tamanho da página.
+          "page_title": "Mostrar página",
+          "first": "Primeira",
+          "first_title": "Primeira Página",
+          "last": "Última",
+          "last_title": "Última Página",
+          "prev": "Anterior",
+          "prev_title": "Página Anterior",
+          "next": "Próxima",
+          "next_title": "Próxima Página",
         }
+      }
     },
   });
 });
