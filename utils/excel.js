@@ -21,7 +21,6 @@ exports.gerarExcelCompleto = async (dados, anexosPorOs, filePath, mes, ano) => {
     { header: 'Tipo Serviço', key: 'tipo_servico', width: 20 },
     { header: 'Descrição', key: 'descricao', width: 30 },
     { header: 'Status', key: 'status', width: 12 },
-    { header: 'Técnico', key: 'tecnico', width: 15 },
     { header: 'Resolução', key: 'resolucao', width: 25 },
     { header: 'Data Criação', key: 'data_criacao', width: 20 },
     { header: 'Data Fechamento', key: 'data_fechamento', width: 20 },

@@ -59,7 +59,8 @@ exports.gerar = async (req, res) => {
     await enviarEmail(
       [
         process.env.EMAIL_ADMIN_1 || 'depto.ti1@mbmcopy.com.br',
-        process.env.EMAIL_ADMIN_2 || 'depto.ti2@mbmcopy.com.br'
+        process.env.EMAIL_ADMIN_2 || 'depto.ti2@mbmcopy.com.br',
+        process.env.EMAIL_ADMIN_3 || 'paulo.faraone@mbmcopy.com.br',
       ],
       assunto,
       corpo,

@@ -17,7 +17,7 @@ exports.create = async ({ solicitante_id, setor, tipo_servico, descricao }) => {
 exports.findByPeriodo = async (mes, ano) => {
   const [rows] = await pool.query(
     `SELECT os.id, u.nome AS solicitante, os.setor, os.tipo_servico,
-            os.descricao, os.status, os.tecnico, os.resolucao,
+            os.descricao, os.status, os.resolucao,
             os.data_criacao, os.data_fechamento, os.token
      FROM ordens_servico os
      JOIN usuarios u ON os.solicitante_id = u.id
