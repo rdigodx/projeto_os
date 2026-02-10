@@ -6,8 +6,7 @@ body {
   min-height: 100vh;
   background-color: var(--cor-fundo);
   background-image:
-    linear-gradient(rgba(245, 245, 245, 0.8), rgba(245, 245, 245, 0.8)),
-    url('/images/background.jpg');
+    linear-gradient(rgba(245, 245, 245, 0.8), rgba(245, 245, 245, 0.8));
   background-size: cover;
   background-position: center;
 }
@@ -50,12 +49,6 @@ main {
 .login-logo {
   width: 180px;
   margin-bottom: 1rem;
-}
-
-.login-form-container h2 {
-  margin-bottom: 1.5rem;
-  color: var(--cor-texto-claro);
-  font-weight: 600;
 }
 
 .form-group {

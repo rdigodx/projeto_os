@@ -1,77 +1,112 @@
+/* ======================================================
+   CARDS DE ESTATÍSTICAS
+====================================================== */
 
 .cards-estatisticas {
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin: 1.5rem 0 2rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin: 1.5rem 0 2rem;
 }
 
 .card {
   background-color: var(--cor-container);
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--borda-radius);
   box-shadow: var(--sombra-caixa);
   text-align: center;
-  text-decoration: none; 
-  transition: transform 0.3s ease, box-shadow 0.3s ease; 
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 130px;
+  position: relative;
 }
 
 .card:hover {
-  transform: translateY(-5px); 
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
 }
 
+/* Barra superior colorida */
+.card::before {
+  content: "";
+  height: 4px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 12px 12px 0 0;
+  background: var(--cor-primaria);
+}
 
 .card h3 {
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: #666;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
 }
 
+.card h3 i {
+  color: var(--cor-primaria);
+}
 
 .card .numero {
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 4vw, 2.5rem);
   font-weight: 700;
-  color: var(--cor-primaria);
 }
 
 .card .texto {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: var(--cor-primaria);
 }
 
-/* Cores específicas para os números de cada tipo de card. */
-.card-novas .numero { color: var(--cor-sucesso); }
-.card-pendentes .numero { color: #ffc107; }
-.card-concluidas .numero { color: var(--cor-secundaria); }
-.card-fora-prazo .numero { color: var(--cor-perigo); }
+/* Cores por tipo */
+.card-novas .numero,
+.card-novas::before { background-color: var(--cor-sucesso); color: var(--cor-sucesso); }
 
-/* Ajuste de cor do título do card para o modo escuro. */
+.card-pendentes .numero,
+.card-pendentes::before { background-color: #ffc107; color: #ffc107; }
+
+.card-concluidas .numero,
+.card-concluidas::before { background-color: var(--cor-secundaria); color: var(--cor-secundaria); }
+
+.card-fora-prazo .numero,
+.card-fora-prazo::before { background-color: var(--cor-perigo); color: var(--cor-perigo); }
+
 .dark-mode .card h3 {
   color: #ccc;
 }
 
-/* --- Seção de Gráficos --- */
+/* ======================================================
+   GRÁFICOS
+====================================================== */
+
 .graficos-container {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Duas colunas de tamanho igual */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.7rem;
   align-items: start;
 }
 
-.grafico-item, .relatorio-box {
+.grafico-item {
   background-color: var(--cor-container);
   padding: 2rem;
   border-radius: var(--borda-radius);
   box-shadow: var(--sombra-caixa);
 }
 
-/* --- Seção de Relatório --- */
+/* ======================================================
+   RELATÓRIO
+====================================================== */
+
 .relatorio-container {
   margin-top: 3rem;
   padding: 2rem;
@@ -80,7 +115,7 @@
 }
 
 .relatorio-box {
-  background: #ffffff;
+  background-color: var(--cor-container);
   max-width: 520px;
   width: 100%;
   padding: 2.5rem;
@@ -91,8 +126,8 @@
 
 .relatorio-box h3 {
   margin-bottom: 2rem;
-  color: #004488;
   font-size: 1.4rem;
+  color: var(--cor-primaria);
 }
 
 .relatorio-box form {
@@ -110,7 +145,6 @@
 .relatorio-box label {
   font-weight: 600;
   margin-bottom: 0.4rem;
-  color: #444;
 }
 
 .relatorio-box select,
@@ -124,7 +158,7 @@
 .relatorio-box select:focus,
 .relatorio-box input:focus {
   outline: none;
-  border-color: #004488;
+  border-color: var(--cor-primaria);
   box-shadow: 0 0 0 2px rgba(0, 68, 136, 0.15);
 }
 
@@ -145,8 +179,10 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
+/* ======================================================
+   TABELA OS
+====================================================== */
 
-/* --- Tabela de Ordens de Serviço --- */
 .tabela-os {
   background-color: var(--cor-container);
   padding: 2rem;
@@ -155,141 +191,100 @@
   margin-bottom: 2rem;
 }
 
-.tabela-os h2 {
-  margin-bottom: 1.5rem;
-}
-
 .tabela-container {
-  overflow-x: auto; /* Adiciona uma barra de rolagem horizontal se a tabela for muito larga. */
+  overflow-x: auto;
 }
 
-/* Permite quebra de linha em colunas com texto longo */
 #tabela-os .col-descricao,
 #tabela-os .col-resolucao {
-  white-space: normal; /* Permite que o texto quebre em várias linhas. */
-  word-break: break-word; /* Quebra a palavra se necessário para evitar overflow. */
+  white-space: normal;
+  word-break: break-word;
 }
 
 .status-badge {
   padding: 0.4rem 1rem;
   border-radius: 20px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: #fff;
-  display: inline-block;
 }
-/* Cores de fundo para cada status. */
+
 .status-nova { background-color: var(--cor-sucesso); }
 .status-pendente { background-color: #ffc107; color: #212529; }
 .status-concluida { background-color: var(--cor-secundaria); }
 .status-fora_prazo { background-color: var(--cor-perigo); }
 
-/* --- Modal para Fechar OS --- */
-/* O modal em si, que cobre a tela inteira com um fundo semitransparente. */
+/* ======================================================
+   MODAL
+====================================================== */
+
 .modal {
   display: none;
   position: fixed;
-  z-index: 9999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6); /* Fundo preto semitransparente. */
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   align-items: center;
   justify-content: center;
+  z-index: 9999;
   padding: 1rem;
 }
-/* O conteúdo da caixa do modal. */
+
 .modal-conteudo {
   background-color: var(--cor-container);
-  margin: 0; 
   padding: 2rem;
   border-radius: var(--borda-radius);
-  width: 100%;
   max-width: 500px;
-  box-shadow: var(--sombra-caixa);
+  width: 100%;
   position: relative;
-}
-.fechar {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  font-size: 4rem;
-  color: #aaa;
-  cursor: pointer;
-  transition: color 0.3s ease;
+  box-shadow: var(--sombra-caixa);
 }
 
 .fechar {
   position: absolute;
   top: 10px;
-  right: 20px;
-  font-size: 4rem;
+  right: 16px;
+  font-size: 2.5rem;
   color: #aaa;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: color 0.3s;
 }
 
-.fechar:hover, .fechar:focus { color: var(--cor-perigo); }
+.fechar:hover {
+  color: var(--cor-perigo);
+}
 
-/* --- Estilos para o formulário dentro do modal --- */
 .modal .form-group {
   margin-bottom: 1.5rem;
-  text-align: left;
 }
 
-.modal .form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 700;
-}
-
-.modal .form-group textarea {
+.modal textarea {
   width: 100%;
   padding: 1rem;
-  border: 1px solid #ccc;
   border-radius: var(--borda-radius);
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem; /* Ajustado para um tamanho mais padrão */
+  border: 1px solid #ccc;
   resize: vertical;
-  min-height: 150px;
+  min-height: 140px;
 }
 
-/* =================================================================== */
-/* === ESTILOS PERSONALIZADOS PARA TABULATOR ========================= */
-/* =================================================================== */
+/* ======================================================
+   TABULATOR
+====================================================== */
 
-/* Estilo geral da tabela Tabulator. */
 .tabulator {
-  border: none;
   background-color: transparent;
+  border: none;
 }
 
-/* Cabeçalho da tabela. */
-.tabulator .tabulator-header {
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
-  font-weight: 600;
-}
-
-/* Colunas do cabeçalho. */
-.tabulator .tabulator-header .tabulator-col {
-  background-color: #f8f9fa;
-}
-
-/* Linhas da tabela. */
-.tabulator .tabulator-row {
-  background-color: var(--cor-container);
-}
-
-/* Efeito ao passar o mouse sobre uma linha. */
-.tabulator .tabulator-row:hover {
-  background-color: #f1f3f5;
-}
-
-/* Rodapé da tabela (onde fica a paginação). */
+.tabulator .tabulator-header,
 .tabulator .tabulator-footer {
   background-color: #f8f9fa;
-  border-top: 1px solid #dee2e6;
-  padding: 0.75rem;
+}
+
+.tabulator .tabulator-row {
+  background-color: var(--cor-container);
+  border-bottom: 1px solid #eee;
+}
+
+.tabulator .tabulator-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
 }

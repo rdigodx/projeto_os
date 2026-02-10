@@ -3,18 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <title>Painel Técnico - Sistema OS</title>
-  <link rel="stylesheet" href="/css/style.css" /> <!-- Estilos Globais -->
-  <link rel="stylesheet" href="/css/painel.css" /> <!-- Estilos da Página -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/painel.css">
+
+  <!-- Responsividade -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- Fontes e Ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Favicon -->
   <link rel="icon" type="image/png" href="/images/logo.png">
 
-  <!-- Tabulator CSS e JS -->
-  <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_modern.min.css" rel="stylesheet">
-  <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- Tabulator -->
+  <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_modern.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+
+  <!-- Dados vindos do backend -->
   <script>
     const qtdTotal = Number("<%= qtd_total || 0 %>");
     const qtdNova = Number("<%= qtd_nova || 0 %>");
@@ -25,137 +36,169 @@
     const ordensData = <%- JSON.stringify(ordens || []) %>;
   </script>
 </head>
+
 <body>
+
 <header>
   <div class="header-container">
-    <h1><i class="fas fa-tachometer-alt"></i> Painel Técnico</h1>
+    <h1>
+      <i class="fas fa-tachometer-alt"></i>
+      Painel Técnico
+    </h1>
+
     <nav class="menu-nav">
-      <div class="nav-links">
-        <a href="/logout" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Sair</a>
-      </div>
+      <a href="/logout" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </a>
     </nav>
   </div>
 </header>
 
 <main class="painel-container">
-    <%- include('partials/alerts') %>
 
-        <section class="cards-estatisticas">
-          <a href="/painel" class="card card-total">
-            <h3><i class="fas fa-list"></i> Total de OS</h3>
-            <span class="numero"><%= qtd_total %></span>
-          </a>
-          <a href="/painel?filtro=novas" class="card card-novas">
-            <h3><i class="fas fa-plus-circle"></i> OS Novas</h3>
-            <span class="numero"><%= qtd_nova %></span>
-          </a>
-          <a href="/painel?filtro=pendentes" class="card card-pendentes">
-            <h3><i class="fas fa-hourglass-half" ></i> OS Pendentes</h3>
-            <span class="numero"><%= qtd_pendente %></span>
-          </a>
-          <a href="/painel?filtro=concluidas" class="card card-concluidas">
-            <h3><i class="fas fa-check-circle"></i> OS Concluídas</h3>
-            <span class="numero"><%= qtd_concluida %></span>
-          </a>
-          <a href="/painel?filtro=fora_prazo" class="card card-fora-prazo">
-            <h3><i class="fas fa-exclamation-triangle"></i> OS Fora do Prazo</h3>
-            <span class="numero"><%= qtd_fora_prazo %></span>
-          </a>
-          <div class="card card-top-usuario">
-            <h3><i class="fas fa-crown"></i> Top Usuário</h3>
-            <span class="texto"><%= usuario_top ? usuario_top.nome : 'N/A' %></span>
-          </div>
-        </section>
-        
-        <section class="graficos-container">
-          <div class="grafico-item">
-            <h2><i class="fas fa-chart-pie"></i> Gráfico de OS por Status</h2>
-            <canvas id="graficoStatus"></canvas>
-          </div>
-          <div class="grafico-item">
-            <h2><i class="fas fa-chart-bar"></i> Usuários que mais abriram OS</h2>
-            <canvas id="graficoUsuarios"></canvas>
-          </div>
-        </section>
+  <%- include('partials/alerts') %>
 
-        <section class="relatorio-container">
-  <div class="relatorio-box">
-    <h3>
-      <i class="fas fa-file-excel"></i>
-      Gerar Relatório de Ordens de Serviço
-    </h3>
+  <!-- ================= CARDS ================= -->
+  <section class="cards-estatisticas">
 
-    <form method="POST" action="/relatorio">
+    <a href="/painel" class="card card-total">
+      <h3><i class="fas fa-list"></i> Total de OS</h3>
+      <span class="numero"><%= qtd_total %></span>
+    </a>
 
-      <!-- MÊS -->
-      <div class="form-group">
-        <label for="mes">
-          <i class="fas fa-calendar"></i>
-          Período (Mês)
-        </label>
-        <select name="mes" id="mes">
-          <option value="">Ano inteiro</option>
+    <a href="/painel?filtro=novas" class="card card-novas">
+      <h3><i class="fas fa-plus-circle"></i> OS Novas</h3>
+      <span class="numero"><%= qtd_nova %></span>
+    </a>
 
-          <% 
-            const meses = [
-              'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-              'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
-            ];
-          %>
+    <a href="/painel?filtro=pendentes" class="card card-pendentes">
+      <h3><i class="fas fa-hourglass-half"></i> OS Pendentes</h3>
+      <span class="numero"><%= qtd_pendente %></span>
+    </a>
 
-          <% for(let i = 1; i <= 12; i++) { %>
-            <option value="<%= i %>" <%= i === mes_atual ? 'selected' : '' %>>
-              <%= meses[i - 1] %>
-            </option>
-          <% } %>
-        </select>
+    <a href="/painel?filtro=concluidas" class="card card-concluidas">
+      <h3><i class="fas fa-check-circle"></i> OS Concluídas</h3>
+      <span class="numero"><%= qtd_concluida %></span>
+    </a>
+
+    <a href="/painel?filtro=fora_prazo" class="card card-fora-prazo">
+      <h3><i class="fas fa-exclamation-triangle"></i> Fora do Prazo</h3>
+      <span class="numero"><%= qtd_fora_prazo %></span>
+    </a>
+
+    <div class="card card-top-usuario">
+      <h3><i class="fas fa-crown"></i> Top Usuário</h3>
+      <span class="texto">
+        <%= usuario_top ? usuario_top.nome : 'N/A' %>
+      </span>
+    </div>
+
+  </section>
+
+  <!-- ================= GRÁFICOS ================= -->
+  <section class="graficos-container">
+
+    <div class="grafico-item">
+      <h2>
+        <i class="fas fa-chart-pie"></i>
+        OS por Status
+      </h2>
+      <canvas id="graficoStatus"></canvas>
+    </div>
+
+    <div class="grafico-item">
+      <h2>
+        <i class="fas fa-chart-bar"></i>
+        Usuários que mais abriram OS
+      </h2>
+      <canvas id="graficoUsuarios"></canvas>
+    </div>
+
+  </section>
+
+  <!-- ================= RELATÓRIO ================= -->
+  <section class="relatorio-container">
+    <div class="relatorio-box">
+
+      <h3>
+        <i class="fas fa-file-excel"></i>
+        Gerar Relatório de OS
+      </h3>
+
+      <form method="POST" action="/relatorio">
+
+        <div class="form-group">
+          <label for="mes">
+            <i class="fas fa-calendar"></i> Período (Mês)
+          </label>
+
+          <select name="mes" id="mes">
+            <option value="">Ano inteiro</option>
+
+            <%
+              const meses = [
+                'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+              ];
+            %>
+
+            <% for(let i = 1; i <= 12; i++) { %>
+              <option value="<%= i %>" <%= i === mes_atual ? 'selected' : '' %>>
+                <%= meses[i - 1] %>
+              </option>
+            <% } %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="ano">
+            <i class="fas fa-calendar-alt"></i> Ano
+          </label>
+          <input type="number" id="ano" name="ano" value="<%= ano_atual %>" min="2020" required>
+        </div>
+
+        <button type="submit" class="btn">
+          <i class="fas fa-paper-plane"></i>
+          Enviar Relatório
+        </button>
+
+      </form>
+    </div>
+  </section>
+
+  <!-- ================= TABELA ================= -->
+  <section class="tabela-os">
+    <h2>
+      <i class="fas fa-list-ol"></i>
+      Ordens de Serviço
+    </h2>
+
+    <div id="tabela-os"></div>
+
+    <% ordens.forEach(os => { %>
+      <div id="modal-<%= os.id %>" class="modal">
+        <div class="modal-conteudo">
+          <span class="fechar" data-id="<%= os.id %>">&times;</span>
+
+          <h3>Resolução da OS #<%= os.id %></h3>
+
+          <form method="POST" action="/os/fechar/<%= os.id %>">
+            <textarea
+              name="resolucao"
+              placeholder="Descreva a resolução do chamado..."
+              required></textarea>
+
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-check"></i>
+              Fechar OS
+            </button>
+          </form>
+        </div>
       </div>
+    <% }) %>
 
-      <!-- ANO -->
-      <div class="form-group">
-        <label for="ano">
-          <i class="fas fa-calendar-alt"></i>
-          Ano
-        </label>
-        <input
-          type="number"
-          id="ano"
-          name="ano"
-          value="<%= ano_atual %>"
-          min="2020"
-          required
-        />
-      </div>
+  </section>
 
-      <!-- BOTÃO -->
-      <button type="submit" class="btn">
-        <i class="fas fa-paper-plane"></i>
-        Enviar Relatório
-      </button>
-
-    </form>
-  </div>
-</section>
-
-
-        <section class="tabela-os">
-          <h2><i class="fas fa-list-ol"></i> Ordens de Serviço</h2>
-          <!-- O contêiner da tabela será populado pelo Tabulator -->
-          <div id="tabela-os"></div>
-          <!-- Os modais serão gerados aqui para cada OS -->
-          <% ordens.forEach(os => { %>
-            <div id="modal-<%= os.id %>" class="modal">
-              <div class="modal-conteudo">
-                <span class="fechar" data-id="<%= os.id %>">&times;</span>
-                <h3>Resolução da OS #<%= os.id %></h3>
-                <form method="POST" action="/os/fechar/<%= os.id %>">
-                  <textarea name="resolucao" placeholder="Descreva a resolução do chamado..." required></textarea>
-                  <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Fechar OS</button>
-                </form>
-              </div>
-            </div>
-          <% }) %>
-        </section>
 </main>
 
 <script src="/js/painelScripts.js"></script>

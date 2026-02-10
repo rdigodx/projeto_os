@@ -3,67 +3,92 @@
 <head>
   <meta charset="UTF-8" />
   <title>Painel de Ordens de Serviço</title>
-  <link rel="stylesheet" href="/css/style.css" /> <!-- Contém todos os estilos -->
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="icon" type="image/png" href="/images/logo.png"/>
 </head>
+
 <body>
+
 <header>
   <div class="header-container">
-    <a href="/"><img src="/images/logo.png" alt="Logo MBM Copy" class="logo"></a>
+    <a href="/">
+      <img src="/images/logo.png" alt="Logo MBM Copy" class="logo">
+    </a>
+
     <nav>
       <ul class="nav-links">
-        <li><a href="/nova_os" class="btn btn-success"><i class="fas fa-plus-circle"></i> Abrir Nova OS</a></li>
-        <li><a href="/login" class="btn btn-secondary"><i class="fas fa-sign-in-alt"></i> Login Técnico</a></li>
+        <li>
+          <a href="/login" class="btn btn-secondary">
+            <i class="fas fa-sign-in-alt"></i> Técnico
+          </a>
+        </li>
       </ul>
     </nav>
   </div>
 </header>
 
-<div class="hero">
-  <h1><span>Bem-vindo ao Portal</span> de Chamados T.I MBM</h1>
-</div>
+<!-- HERO -->
+<section class="hero">
+  <h1>
+    <span>Portal de Chamados</span><br>
+    TI MBM
+  </h1>
+</section>
 
-<main class="main-container">
-  <div class="content">
+<main>
+  <div class="main-container">
+
+    <!-- ALERTAS -->
     <%- include('partials/alerts') %>
 
     <% if (ordem) { %>
       <section class="ordem-detalhes">
-        <h2><i class="fas fa-info-circle"></i> Detalhes da sua OS</h2>
+        <h2><i class="fas fa-info-circle"></i> Detalhes da Ordem de Serviço</h2>
 
         <div class="filtro-container">
-          <input type="text" id="filtro-os" placeholder="Filtrar detalhes da OS..." class="filtro-input"/>
+          <input
+            type="text"
+            id="filtro-os"
+            class="filtro-input"
+            placeholder="Filtrar informações da OS..."
+          />
         </div>
 
-        <div class="os-item">
-          <p><strong><i class="fas fa-user"></i> Solicitante:</strong> <%= ordem.solicitante %></p>
-          <p><strong><i class="fas fa-building"></i> Setor:</strong> <%= ordem.setor %></p>
-          <p><strong><i class="fas fa-tools"></i> Tipo de Serviço:</strong> <%= ordem.tipo_servico %></p>
-          <p><strong><i class="fas fa-info-circle"></i> Status:</strong> <%= ordem.status %></p>
-          <p><strong><i class="fas fa-calendar"></i> Data de Criação:</strong> <%= new Date(ordem.data_criacao).toLocaleString("pt-BR") %></p>
-          <p><strong><i class="fas fa-key"></i> Token:</strong> <%= ordem.token %></p>
+        <div class="os-grid">
+          <div class="os-item"><strong>Solicitante:</strong> <%= ordem.solicitante %></div>
+          <div class="os-item"><strong>Setor:</strong> <%= ordem.setor %></div>
+          <div class="os-item"><strong>Tipo:</strong> <%= ordem.tipo_servico %></div>
+          <div class="os-item"><strong>Status:</strong> <%= ordem.status %></div>
+          <div class="os-item"><strong>Data:</strong> <%= new Date(ordem.data_criacao).toLocaleString("pt-BR") %></div>
+          <div class="os-item"><strong>Token:</strong> <%= ordem.token %></div>
         </div>
       </section>
     <% } else { %>
       <section class="sem-ordem">
-        <p><i class="fas fa-info-circle"></i> BEM-VINDO! NÃO HÁ NENHUMA OS PARA EXIBIR NO MOMENTO</p>
+        <p>
+          <i class="fas fa-info-circle"></i>
+          Nenhuma Ordem de Serviço encontrada no momento
+        </p>
       </section>
     <% } %>
 
-    <div class="nova-os-container">
-      <a href="/nova_os" class="btn btn-success">
-        <i class="fas fa-plus-circle"></i> Abrir Nova OS
-      </a>
-    </div>
   </div>
 </main>
 
+<!-- 🔵 BOTÃO FLUTUANTE – NOVA OS -->
+<a href="/nova_os" class="btn-nova-os-float" title="Abrir Nova OS">
+  <i class="fas fa-plus"></i>
+</a>
+
 <footer>
-  <div class="footer-container">MBM Copy - Sistema de OS</div>
+  MBM Copy © Sistema de Ordens de Serviço
 </footer>
+
 <script src="/js/indexScripts.js"></script>
 </body>
 </html>
+
