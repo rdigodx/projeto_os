@@ -70,16 +70,16 @@
 
 /* Cores por tipo */
 .card-novas .numero,
-.card-novas::before { background-color: var(--cor-sucesso); color: var(--cor-sucesso); }
+.card-novas::before {  color: var(--cor-sucesso); }
 
 .card-pendentes .numero,
-.card-pendentes::before { background-color: #ffc107; color: #ffc107; }
+.card-pendentes::before {  color: #ffc107; }
 
 .card-concluidas .numero,
-.card-concluidas::before { background-color: var(--cor-secundaria); color: var(--cor-secundaria); }
+.card-concluidas::before {  color: var(--cor-secundaria); }
 
 .card-fora-prazo .numero,
-.card-fora-prazo::before { background-color: var(--cor-perigo); color: var(--cor-perigo); }
+.card-fora-prazo::before {  color: var(--cor-perigo); }
 
 .dark-mode .card h3 {
   color: #ccc;
