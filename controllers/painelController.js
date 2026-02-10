@@ -2,7 +2,7 @@ const OrdemModel = require('../models/ordemModel');
 const AnexoModel = require('../models/anexoModel');
 
 // Função que renderiza a página do painel técnico
-exports.painel = async (req, res) => {
+exports.painel = async (req, res, next) => {
   // Verifica se o técnico está logado; se não estiver, redireciona para /login
   if (!req.session.tecnico) return res.redirect('/login');
 
@@ -24,6 +24,8 @@ exports.painel = async (req, res) => {
     const qtd_pendente = await OrdemModel.countByStatus('Pendente');
     const qtd_concluida = await OrdemModel.countByStatus('Concluída');
     const qtd_fora_prazo = await OrdemModel.countForaPrazo();
+    // A contagem total é feita diretamente no banco de dados para garantir que todos os registros sejam contados.
+    const qtd_total = await OrdemModel.countAll();
     const usuario_top = await OrdemModel.findUsuarioTop();
     const usuarios_top5 = await OrdemModel.findUsuariosTop5();
 
@@ -34,7 +36,7 @@ exports.painel = async (req, res) => {
       qtd_pendente,
       qtd_concluida,
       qtd_fora_prazo,
-      qtd_total: ordens.length,
+      qtd_total, 
       usuario_top,
       usuarios_top5,
       tecnico: req.session.tecnico,

@@ -16,6 +16,7 @@
   <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
 
   <script>
+    const qtdTotal = Number("<%= qtd_total || 0 %>");
     const qtdNova = Number("<%= qtd_nova || 0 %>");
     const qtdPendente = Number("<%= qtd_pendente || 0 %>");
     const qtdConcluida = Number("<%= qtd_concluida || 0 %>");
@@ -78,25 +79,64 @@
         </section>
 
         <section class="relatorio-container">
-          <div class="relatorio-box">
-          <h3><i class="fas fa-file-excel"></i> Gerar Relatório de OS</h3>
-          <form method="POST" action="/relatorio">
-            <div class="form-group">
-              <label for="mes"><i class="fas fa-calendar"></i> Mês:</label>
-              <select name="mes" id="mes" required>
-                <% for(let i=1;i<=12;i++){ %>
-                  <option value="<%= i %>" <%= i===mes_atual ? 'selected' : '' %>><%= ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][i-1] %></option>
-                <% } %>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="ano"><i class="fas fa-calendar-alt"></i> Ano:</label>
-              <input type="number" id="ano" name="ano" value="<%= ano_atual %>" min="2020" required />
-            </div>
-            <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> Enviar Relatório</button>
-          </form>
-          </div>
-        </section>
+  <div class="relatorio-box">
+    <h3>
+      <i class="fas fa-file-excel"></i>
+      Gerar Relatório de Ordens de Serviço
+    </h3>
+
+    <form method="POST" action="/relatorio">
+
+      <!-- MÊS -->
+      <div class="form-group">
+        <label for="mes">
+          <i class="fas fa-calendar"></i>
+          Período (Mês)
+        </label>
+        <select name="mes" id="mes">
+          <option value="">Ano inteiro</option>
+
+          <% 
+            const meses = [
+              'Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+              'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+            ];
+          %>
+
+          <% for(let i = 1; i <= 12; i++) { %>
+            <option value="<%= i %>" <%= i === mes_atual ? 'selected' : '' %>>
+              <%= meses[i - 1] %>
+            </option>
+          <% } %>
+        </select>
+      </div>
+
+      <!-- ANO -->
+      <div class="form-group">
+        <label for="ano">
+          <i class="fas fa-calendar-alt"></i>
+          Ano
+        </label>
+        <input
+          type="number"
+          id="ano"
+          name="ano"
+          value="<%= ano_atual %>"
+          min="2020"
+          required
+        />
+      </div>
+
+      <!-- BOTÃO -->
+      <button type="submit" class="btn">
+        <i class="fas fa-paper-plane"></i>
+        Enviar Relatório
+      </button>
+
+    </form>
+  </div>
+</section>
+
 
         <section class="tabela-os">
           <h2><i class="fas fa-list-ol"></i> Ordens de Serviço</h2>

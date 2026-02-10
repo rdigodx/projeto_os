@@ -26,7 +26,8 @@ main {
   max-width: 450px;
   width: 100%;
   padding: 2.5rem;
-  background-color: #cccccc;
+  background: linear-gradient(90deg, var(--cor-primaria) 0%, #003f80 100%);
+  color: var(--cor-texto-claro);
   border-radius: var(--borda-radius);
   box-shadow: var(--sombra-caixa);
   text-align: center;
@@ -53,7 +54,7 @@ main {
 
 .login-form-container h2 {
   margin-bottom: 1.5rem;
-  color: var(--cor-primaria);
+  color: var(--cor-texto-claro);
   font-weight: 600;
 }
 
@@ -94,11 +95,12 @@ main {
   position: absolute;
   bottom: -1.4rem;
   left: 0;
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: var(--cor-perigo);
   width: 100%;
   text-align: left;
 }
+
 
 
 .btn-login {
@@ -106,19 +108,31 @@ main {
   padding: 0.9rem;
   font-size: 1.1rem;
   font-weight: bold;
-  background-color: var(--cor-primaria);
-  color: #fff;
+  background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+  color: #ffffff;
   border: none;
   border-radius: var(--borda-radius);
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background 0.3s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .btn-login:hover {
-  background-color: #0056b3;
   transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
 }
 
+.btn-login:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn-login:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
 
 .messages-container {
   width: 100%;

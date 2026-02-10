@@ -1,109 +1,153 @@
-/* public/css/nova_os.css */
-
-/* --- Container do Formulário --- */
+/* ===============================
+   CONTAINER
+================================ */
 .form-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 2.5rem;
-  background-color: var(--cor-container);
-  border-radius: var(--borda-radius);
-  box-shadow: var(--sombra-caixa);
+  max-width: 1400px;
+  width: 96%;
+  margin: 1.5rem auto;
+  padding: 2rem 3rem;
+  background-color: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* --- Grupos de Formulário e Labels --- */
+/* ===============================
+   GRID ERP
+================================ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem 2rem;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+/* ===============================
+   FORM GROUP
+================================ */
 .form-group {
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ===============================
+   LABELS
+================================ */
 label {
-  display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #555;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
 label.required::after {
   content: ' *';
-  color: var(--cor-perigo);
+  color: #d9534f;
 }
 
-/* --- Inputs, Selects e Textarea --- */
+/* ===============================
+   INPUTS
+================================ */
 input[type="text"],
 input[type="email"],
 select,
 textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: var(--borda-radius);
+  height: 36px;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #cfcfcf;
+  border-radius: 4px;
+  font-size: 0.85rem;
   font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-input[type="text"]:focus,
-input[type="email"]:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--cor-primaria);
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
 textarea {
+  height: auto;
+  min-height: 80px;
   resize: vertical;
-  min-height: 120px;
 }
 
-/* --- Componentes Específicos --- */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13,110,253,0.15);
+}
 
-/* Contador de caracteres */
-.char-counter {
-  display: block;
-  text-align: right;
+::placeholder {
+  color: #aaa;
   font-size: 0.8rem;
-  color: #888;
-  margin-top: 0.25rem;
 }
 
-/* Input de arquivo */
+/* ===============================
+   INPUT FILE
+================================ */
 input[type="file"] {
-  border: none;
-  padding: 0;
+  height: auto;
+  padding: 0.4rem;
+  font-size: 0.8rem;
+  border: 1px dashed #bbb;
+  background-color: #fafafa;
 }
 
-.file-preview {
-  margin-top: 0.75rem;
-  font-style: italic;
-  color: #555;
+/* ===============================
+   CONTADOR
+================================ */
+.char-counter {
+  text-align: right;
+  font-size: 0.7rem;
+  color: #777;
 }
 
-/* --- Botão de Envio --- */
-
-/* --- Contêiner para centralizar o botão --- */
+/* ===============================
+   BOTÃO
+================================ */
 .btn-container {
   display: flex;
-  justify-content: center;
-  margin-top: 2rem; /* Adiciona um espaço acima do botão */
+  justify-content: flex-end;
+  margin-top: 1.5rem;
 }
 
 .btn-submit {
-  display: block;
-  padding: 0.90rem 4.5rem;
-   border: 2px solid transparent; /* Adicionado para que a transição de cor da borda funcione */
-  border-radius: var(--borda-radius);
-  background-color: var(--cor-primaria);
-  color: var(--cor-texto-claro);
-  font-size: 1rem;
-  font-weight: 700;
-  text-align: center;
+  height: 38px;
+  padding: 0 2.5rem;
+  background-color: #0d6efd;
+  border: 1px solid #0d6efd;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
   cursor: pointer;
-   transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .btn-submit:hover {
-  background-color: var(--cor-sucesso);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--cor-sucesso); 
+  background-color: #198754;
+  border-color: #198754;
+}
+
+/* ===============================
+   RESPONSIVO
+================================ */
+@media (max-width: 1200px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-container {
+    justify-content: center;
+  }
+
+  .btn-submit {
+    width: 100%;
+  }
 }

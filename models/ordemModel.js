@@ -15,18 +15,28 @@ exports.create = async ({ solicitante_id, setor, tipo_servico, descricao }) => {
 
 // Busca ordens por mês e ano (para relatórios)
 exports.findByPeriodo = async (mes, ano) => {
-  const [rows] = await pool.query(
-    `SELECT os.id, u.nome AS solicitante, os.setor, os.tipo_servico,
-            os.descricao, os.status, os.resolucao,
-            os.data_criacao, os.data_fechamento, os.token
-     FROM ordens_servico os
-     JOIN usuarios u ON os.solicitante_id = u.id
-     WHERE MONTH(os.data_criacao) = ? AND YEAR(os.data_criacao) = ?
-     ORDER BY os.data_criacao DESC`,
-    [mes, ano]
-  );
+  let query = `
+    SELECT os.id, u.nome AS solicitante, os.setor, os.tipo_servico,
+           os.descricao, os.status, os.resolucao,
+           os.data_criacao, os.data_fechamento, os.token
+    FROM ordens_servico os
+    JOIN usuarios u ON os.solicitante_id = u.id
+    WHERE YEAR(os.data_criacao) = ?
+  `;
+
+  const params = [ano];
+
+  if (mes) {
+    query += ` AND MONTH(os.data_criacao) = ?`;
+    params.push(mes);
+  }
+
+  query += ` ORDER BY os.data_criacao DESC`;
+
+  const [rows] = await pool.query(query, params);
   return rows;
 };
+
 
 // Busca ordens aplicando filtro
 exports.findByFiltro = async (filtro = null) => {
@@ -104,6 +114,14 @@ exports.countForaPrazo = async () => {
      FROM ordens_servico 
      WHERE status != 'Concluída' 
        AND DATEDIFF(NOW(), data_criacao) > 7`
+  );
+  return rows[0].count;
+};
+
+// Conta TODAS as OS
+exports.countAll = async () => {
+  const [rows] = await pool.query(
+    'SELECT COUNT(*) as count FROM ordens_servico'
   );
   return rows[0].count;
 };

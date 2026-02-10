@@ -131,7 +131,7 @@ app.use((err, req, res, next) => {
 
 // ------------------- SERVIDOR -------------------
 const server = app.listen(PORT, HOST, () => {
-  logger.info(`Servidor rodando em http://${HOST}:${PORT}`);
+  logger.info(`Servidor rodando`);
   // Melhoria: Em produção, o SECRET deve ser obrigatório para a segurança da sessão.
   if (!process.env.SECRET) {
     const secretWarning = 'ERRO CRÍTICO: A variável de ambiente "SECRET" não está definida. A sessão NÃO será segura.';

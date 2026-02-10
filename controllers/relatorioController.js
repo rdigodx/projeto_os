@@ -9,7 +9,9 @@ const AnexoModel = require('../models/anexoModel');
 // Função assíncrona que gera o relatório de OS para um mês e ano específicos.
 exports.gerar = async (req, res) => {
 
-  const { mes, ano } = req.body;
+  let { mes, ano } = req.body;
+  mes = mes ? Number(mes) : null;
+  ano = Number(ano);
   let filePath;
   const usuario = req.session.tecnico || 'desconhecido';
 

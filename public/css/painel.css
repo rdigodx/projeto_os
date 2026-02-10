@@ -1,10 +1,7 @@
-/* public/css/painel.css */
 
-/* --- Cards de Estatísticas --- */
-/* Define o layout em grid para os cards de estatísticas, tornando-o responsivo. */
 .cards-estatisticas {
-  display: grid; /* Usa o layout de grid. */
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Cria colunas que se ajustam ao tamanho da tela. */
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
   margin: 1.5rem 0 2rem 0;
 }
@@ -15,17 +12,16 @@
   border-radius: var(--borda-radius);
   box-shadow: var(--sombra-caixa);
   text-align: center;
-  text-decoration: none; /* Remove o sublinhado se o card for um link. */
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Efeito suave de transição. */
+  text-decoration: none; 
+  transition: transform 0.3s ease, box-shadow 0.3s ease; 
 }
 
-/* Efeito ao passar o mouse sobre o card. */
 .card:hover {
-  transform: translateY(-5px); /* Move o card um pouco para cima. */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Aumenta a sombra para dar profundidade. */
+  transform: translateY(-5px); 
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo do título dentro do card (ex: "OS Abertas"). */
+
 .card h3 {
   font-size: 1rem;
   color: #666;
@@ -36,7 +32,7 @@
   gap: 0.5rem;
 }
 
-/* Estilo do número grande no card. */
+
 .card .numero {
   font-size: 2.5rem;
   font-weight: 700;
@@ -77,37 +73,78 @@
 
 /* --- Seção de Relatório --- */
 .relatorio-container {
-  margin-top: 2rem;
+  margin-top: 3rem;
   padding: 2rem;
+  display: flex;
+  justify-content: center;
 }
 
 .relatorio-box {
-  max-width: 600px; /* Largura máxima da caixa */
-  margin: 0 auto; /* Centraliza a caixa */
+  background: #ffffff;
+  max-width: 520px;
+  width: 100%;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   text-align: center;
 }
 
 .relatorio-box h3 {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  color: #004488;
+  font-size: 1.4rem;
 }
 
 .relatorio-box form {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .relatorio-box .form-group {
-  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.relatorio-box label {
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: #444;
+}
+
+.relatorio-box select,
+.relatorio-box input {
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+.relatorio-box select:focus,
+.relatorio-box input:focus {
+  outline: none;
+  border-color: #004488;
+  box-shadow: 0 0 0 2px rgba(0, 68, 136, 0.15);
 }
 
 .relatorio-box .btn {
-  background-color: var(--cor-sucesso); /* Cor verde para o botão de gerar relatório. */
-  border-color: var(--cor-sucesso);
+  margin-top: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #28a745, #218838);
+  border: none;
   color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
+
+.relatorio-box .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
 
 /* --- Tabela de Ordens de Serviço --- */
 .tabela-os {
