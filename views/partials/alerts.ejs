@@ -1,40 +1,50 @@
-<% if (messages && Object.keys(messages).length > 0) { %>
-  <% Object.keys(messages).forEach(function(type) { %>
-    <% messages[type].forEach(function(msg) { %>
-      <div class="alert alert-<%= type %>">
-        <%= msg %>
-        <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+<%
+  const normalizeType = (type) => {
+    const raw = String(type || '').toLowerCase();
+    if (raw === 'error' || raw === 'danger') return 'danger';
+    if (raw === 'warn' || raw === 'warning') return 'warning';
+    if (raw === 'success') return 'success';
+    return 'info';
+  };
+
+  const alerts = [];
+
+  if (messages && typeof messages === 'object') {
+    Object.keys(messages).forEach((type) => {
+      const normalizedType = normalizeType(type);
+      const items = Array.isArray(messages[type]) ? messages[type] : [messages[type]];
+      items.forEach((msg) => {
+        if (msg) alerts.push({ type: normalizedType, text: String(msg) });
+      });
+    });
+  }
+
+  if (typeof token !== 'undefined' && token) {
+    alerts.push({
+      type: 'success',
+      text: `Sua Ordem de Serviço foi criada com sucesso! O token é: ${token}`,
+    });
+  }
+
+  if (typeof warning !== 'undefined' && warning) alerts.push({ type: 'warning', text: String(warning) });
+  if (typeof error !== 'undefined' && error) alerts.push({ type: 'danger', text: String(error) });
+  if (typeof info !== 'undefined' && info) alerts.push({ type: 'info', text: String(info) });
+  if (typeof success !== 'undefined' && success) alerts.push({ type: 'success', text: String(success) });
+%>
+
+<% if (alerts.length > 0) { %>
+  <div class="messages-container" role="status" aria-live="polite">
+    <% alerts.forEach((alert) => { %>
+      <div class="message <%= alert.type %>" role="alert">
+        <span class="message-marker" aria-hidden="true"></span>
+        <div class="message-text"><%= alert.text %></div>
+        <button
+          type="button"
+          class="message-close-btn"
+          aria-label="Fechar mensagem"
+          onclick="this.closest('.message').remove();"
+        >&times;</button>
       </div>
-    <% }); %>
-  <% }); %>
-<% } %>
-<% if (typeof token !== 'undefined') { %>
-  <div class="alert alert-success">
-    Sua Ordem de Serviço foi criada com sucesso! O token é: <strong><%= token %></strong>
-    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
-  </div>
-<% } %>
-<% if (typeof warning !== 'undefined') { %>
-  <div class="alert alert-warning">
-    <%= warning %>
-    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
-  </div>
-<% } %>
-<% if (typeof error !== 'undefined') { %>
-  <div class="alert alert-error">
-    <%= error %>
-    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
-  </div>
-<% } %>
-<% if (typeof info !== 'undefined') { %>
-  <div class="alert alert-info">
-    <%= info %>
-    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
-  </div>
-<% } %>
-<% if (typeof success !== 'undefined') { %>
-  <div class="alert alert-success">
-    <%= success %>
-    <button type="button" class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+    <% }) %>
   </div>
 <% } %>

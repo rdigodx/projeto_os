@@ -1,20 +1,39 @@
 const { logger } = require('../utils/logger');
 const UsuarioModel = require('../models/usuarioModel');
 const OrdemModel = require('../models/ordemModel');
+const TOKEN_REGEX = /^[A-Z0-9]{6,20}$/;
 
 // Página inicial
 exports.index = async (req, res) => {
+  const tokenInformado = String(req.query.token || '').trim().toUpperCase();
+  let ordem = null;
+  let consultaErro = null;
+
   try {
-    const usuarios = await UsuarioModel.findAll();
+    if (tokenInformado) {
+      if (!TOKEN_REGEX.test(tokenInformado)) {
+        consultaErro = 'Token invalido. Confira e tente novamente.';
+      } else {
+        ordem = await OrdemModel.findByTokenPublic(tokenInformado);
+        if (!ordem) {
+          consultaErro = 'Nenhuma Ordem de Servico encontrada para o token informado.';
+        }
+      }
+    }
+
     res.render('index', {
-      usuarios,
-      ordem: null,
-      messages: req.flash()
+      ordem,
+      tokenInformado,
+      consultaErro
     });
   } catch (err) {
     logger.error('Erro ao carregar página inicial:', err);
     req.flash('danger', 'Erro ao carregar página inicial.');
-    res.render('index', { usuarios: [], ordem: null, messages: req.flash() });
+    res.render('index', {
+      ordem: null,
+      tokenInformado,
+      consultaErro: 'Nao foi possivel consultar a Ordem de Servico neste momento.'
+    });
   }
 };
 
@@ -30,8 +49,7 @@ exports.ordenar = async (req, res) => {
     const usuarios = await UsuarioModel.findAll({ order: [[ordem, 'ASC']] });
     res.render('index', {
       usuarios,
-      ordem,
-      messages: req.flash()
+      ordem
     });
   } catch (err) {
     logger.error('Erro ao ordenar usuários:', err);
@@ -42,13 +60,12 @@ exports.ordenar = async (req, res) => {
 
 // Formulário para nova OS
 exports.novaOsForm = (req, res) => {
-  res.render('nova_os', { messages: req.flash() });
+  res.render('nova_os');
 };
 
 // Página 404
 exports.paginaNaoEncontrada = (req, res) => {
   res.status(404).render('404', {
-    messages: req.flash(),
     url: req.originalUrl
   });
 };

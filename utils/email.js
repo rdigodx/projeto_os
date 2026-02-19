@@ -1,44 +1,55 @@
+const path = require('path');
 const nodemailer = require('nodemailer');
+const { logger } = require('./logger');
 
-if (!process.env.EMAIL_HOST || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-  console.warn('⚠️ Atenção: Variáveis de ambiente de e-mail não configuradas corretamente.');
+const emailHost = process.env.EMAIL_HOST;
+const emailUser = process.env.EMAIL_USER;
+const emailPass = process.env.EMAIL_PASS;
+const emailPort = Number(process.env.EMAIL_PORT || 587);
+const allowSelfSigned =
+  process.env.EMAIL_ALLOW_SELF_SIGNED === 'true' && process.env.NODE_ENV !== 'production';
+
+if (!emailHost || !emailUser || !emailPass) {
+  logger.warn('Variaveis de e-mail nao configuradas corretamente (EMAIL_HOST/EMAIL_USER/EMAIL_PASS).');
 }
 
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT || 587,
-  secure: process.env.EMAIL_PORT == 465, // SSL apenas se for porta 465
+  host: emailHost,
+  port: emailPort,
+  secure: emailPort === 465,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    user: emailUser,
+    pass: emailPass,
   },
-  tls: {
-    rejectUnauthorized: false // evita erro com certificados autoassinados
-  }
+  ...(allowSelfSigned ? { tls: { rejectUnauthorized: false } } : {}),
 });
 
-// Função para enviar e-mails
 const enviarEmail = async (destinatarios, assunto, corpo, anexos = []) => {
+  const lista = Array.isArray(destinatarios) ? destinatarios.filter(Boolean) : [];
+  if (lista.length === 0) {
+    logger.warn(`Tentativa de envio sem destinatarios. Assunto: ${assunto}`);
+    return null;
+  }
+
   try {
-    // Primeiro, verifica conexão com o servidor SMTP
     await transporter.verify();
 
     const info = await transporter.sendMail({
-      from: `"Sistema OS" <${process.env.EMAIL_USER}>`,
-      bcc: destinatarios.join(', '), // cópia oculta para todos
+      from: `"Sistema OS" <${emailUser}>`,
+      bcc: lista.join(', '),
       subject: assunto,
       html: corpo,
-      attachments: anexos.map(anexo => ({
-        filename: anexo.split('/').pop(),
-        path: anexo
-      }))
+      attachments: anexos.map((anexo) => ({
+        filename: path.basename(anexo),
+        path: anexo,
+      })),
     });
 
-    console.log(`📧 E-mail enviado com sucesso para: ${destinatarios.join(', ')}`);
+    logger.info(`E-mail enviado com sucesso. Assunto: ${assunto}`);
     return info;
   } catch (err) {
-    console.error(`❌ Falha ao enviar e-mail (${assunto}) para ${destinatarios.join(', ')}:`, err.message);
-    return null; // não trava o sistema
+    logger.error(`Falha ao enviar e-mail. Assunto: ${assunto}`, err);
+    throw err;
   }
 };
 

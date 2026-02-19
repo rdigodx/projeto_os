@@ -45,6 +45,43 @@
     <!-- ALERTAS -->
     <%- include('partials/alerts') %>
 
+    <section class="ordem-detalhes">
+      <h2><i class="fas fa-search"></i> Consultar Ordem de Serviço</h2>
+      <div id="tokenFormFeedback" class="form-feedback-slot" aria-live="polite"></div>
+      <form method="GET" action="/" class="filtro-container">
+        <input
+          type="text"
+          id="token-busca"
+          name="token"
+          class="filtro-input"
+          placeholder="Digite o token de acompanhamento"
+          value="<%= tokenInformado || '' %>"
+          maxlength="20"
+          required
+        />
+        <div style="margin-top: 0.75rem;">
+          <button type="submit" class="btn">
+            <i class="fas fa-search"></i> Buscar OS
+          </button>
+        </div>
+      </form>
+
+      <% if (consultaErro) { %>
+        <div class="messages-container">
+          <div class="message warning" role="alert">
+            <span class="message-marker" aria-hidden="true"></span>
+            <div class="message-text"><%= consultaErro %></div>
+            <button
+              type="button"
+              class="message-close-btn"
+              aria-label="Fechar mensagem"
+              onclick="this.closest('.message').remove();"
+            >&times;</button>
+          </div>
+        </div>
+      <% } %>
+    </section>
+
     <% if (ordem) { %>
       <section class="ordem-detalhes">
         <h2><i class="fas fa-info-circle"></i> Detalhes da Ordem de Serviço</h2>
@@ -65,13 +102,15 @@
           <div class="os-item"><strong>Status:</strong> <%= ordem.status %></div>
           <div class="os-item"><strong>Data:</strong> <%= new Date(ordem.data_criacao).toLocaleString("pt-BR") %></div>
           <div class="os-item"><strong>Token:</strong> <%= ordem.token %></div>
+          <div class="os-item"><strong>Descrição:</strong> <%= ordem.descricao %></div>
+          <div class="os-item"><strong>Resolução:</strong> <%= ordem.resolucao || 'Ainda não disponível' %></div>
         </div>
       </section>
     <% } else { %>
       <section class="sem-ordem">
         <p>
           <i class="fas fa-info-circle"></i>
-          Nenhuma Ordem de Serviço encontrada no momento
+          Informe seu token para acompanhar sua Ordem de Serviço.
         </p>
       </section>
     <% } %>
@@ -91,4 +130,3 @@
 <script src="/js/indexScripts.js"></script>
 </body>
 </html>
-

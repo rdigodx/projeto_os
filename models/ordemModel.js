@@ -1,14 +1,74 @@
 const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 
+const PAGE_SIZE_DEFAULT = 25;
+const PAGE_SIZE_MAX = 100;
+const SORT_COLUMNS = {
+  id: 'os.id',
+  data: 'os.data_criacao',
+  status: 'os.status',
+  prioridade: "FIELD(os.prioridade, 'Crítica', 'Alta', 'Média', 'Baixa')",
+  prazo: 'os.prazo_limite',
+  solicitante: 'u.nome',
+  setor: 'os.setor',
+  tipo: 'os.tipo_servico',
+  tecnico: 'os.tecnico',
+};
+
+const STATUS_FILTERS = {
+  nova: { clause: 'os.status = ?', params: ['Nova'] },
+  pendente: { clause: 'os.status = ?', params: ['Pendente'] },
+  concluida: { clause: 'os.status = ?', params: ['Concluída'] },
+  fora_prazo: { clause: 'os.status != ? AND DATEDIFF(NOW(), os.data_criacao) > 7', params: ['Concluída'] },
+};
+
+const PRIORIDADE_FILTERS = {
+  baixa: 'Baixa',
+  media: 'Média',
+  alta: 'Alta',
+  critica: 'Crítica',
+};
+
+const SLA_ALERTA_HORAS = 2;
+
+const SLA_FILTERS = {
+  no_prazo: {
+    clause: `os.status != ? AND os.prazo_limite IS NOT NULL AND os.prazo_limite >= DATE_ADD(NOW(), INTERVAL ${SLA_ALERTA_HORAS} HOUR)`,
+    params: ['Concluída'],
+  },
+  vence_hoje: {
+    clause: `os.status != ? AND os.prazo_limite IS NOT NULL AND os.prazo_limite >= NOW() AND os.prazo_limite < DATE_ADD(NOW(), INTERVAL ${SLA_ALERTA_HORAS} HOUR)`,
+    params: ['Concluída'],
+  },
+  estourado: {
+    clause: 'os.status != ? AND os.prazo_limite IS NOT NULL AND os.prazo_limite < NOW()',
+    params: ['Concluída'],
+  },
+};
+
+const toPositiveInt = (value, fallback) => {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+};
+
 // Cria uma nova Ordem de Serviço (OS)
-exports.create = async ({ solicitante_id, setor, tipo_servico, descricao }) => {
+exports.create = async ({
+  solicitante_id,
+  setor,
+  tipo_servico,
+  descricao,
+  prioridade = 'Média',
+  prazo_limite = null,
+}, db = pool) => {
   const token = uuidv4().split('-')[0].toUpperCase();
-  const [result] = await pool.query(
+  const [result] = await db.query(
     `INSERT INTO ordens_servico 
-      (solicitante_id, setor, tipo_servico, descricao, status, token, data_criacao)
-     VALUES (?, ?, ?, ?, 'Nova', ?, NOW())`,
-    [solicitante_id, setor, tipo_servico, descricao, token]
+      (solicitante_id, setor, tipo_servico, descricao, prioridade, prazo_limite, status, token, data_criacao)
+     VALUES (?, ?, ?, ?, ?, ?, 'Nova', ?, NOW())`,
+    [solicitante_id, setor, tipo_servico, descricao, prioridade, prazo_limite, token]
   );
   return { id: result.insertId, token };
 };
@@ -17,7 +77,7 @@ exports.create = async ({ solicitante_id, setor, tipo_servico, descricao }) => {
 exports.findByPeriodo = async (mes, ano) => {
   let query = `
     SELECT os.id, u.nome AS solicitante, os.setor, os.tipo_servico,
-           os.descricao, os.status, os.resolucao,
+           os.descricao, os.status, os.prioridade, os.prazo_limite, os.resolucao,
            os.data_criacao, os.data_fechamento, os.token
     FROM ordens_servico os
     JOIN usuarios u ON os.solicitante_id = u.id
@@ -70,6 +130,103 @@ exports.findByFiltro = async (filtro = null) => {
   query += ' ORDER BY os.data_criacao DESC';
   const [rows] = await pool.query(query, params);
   return rows;
+};
+
+exports.findPaged = async ({
+  page = 1,
+  pageSize = PAGE_SIZE_DEFAULT,
+  status = '',
+  prioridade = '',
+  sla = '',
+  search = '',
+  sort = 'data',
+  dir = 'desc',
+} = {}) => {
+  const safePage = toPositiveInt(page, 1);
+  const safePageSize = Math.min(
+    PAGE_SIZE_MAX,
+    toPositiveInt(pageSize, PAGE_SIZE_DEFAULT)
+  );
+  const sortColumn = SORT_COLUMNS[sort] || SORT_COLUMNS.data;
+  const sortDir = String(dir).toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+  const offset = (safePage - 1) * safePageSize;
+
+  const whereClauses = [];
+  const whereParams = [];
+  const statusRule = STATUS_FILTERS[status];
+  const prioridadeValue = PRIORIDADE_FILTERS[prioridade] || null;
+  const slaRule = SLA_FILTERS[sla];
+
+  if (statusRule) {
+    whereClauses.push(statusRule.clause);
+    whereParams.push(...statusRule.params);
+  }
+
+  if (prioridadeValue) {
+    whereClauses.push('os.prioridade = ?');
+    whereParams.push(prioridadeValue);
+  }
+
+  if (slaRule) {
+    whereClauses.push(slaRule.clause);
+    whereParams.push(...slaRule.params);
+  }
+
+  const safeSearch = String(search || '').trim().slice(0, 120);
+  if (safeSearch) {
+    whereClauses.push(
+      `(os.token LIKE ? OR u.nome LIKE ? OR os.setor LIKE ? OR os.tipo_servico LIKE ? OR os.descricao LIKE ? OR os.tecnico LIKE ?)`
+    );
+    const likeValue = `%${safeSearch}%`;
+    whereParams.push(
+      likeValue,
+      likeValue,
+      likeValue,
+      likeValue,
+      likeValue,
+      likeValue
+    );
+  }
+
+  const whereSql = whereClauses.length ? `WHERE ${whereClauses.join(' AND ')}` : '';
+  const baseFrom = `
+    FROM ordens_servico os
+    JOIN usuarios u ON os.solicitante_id = u.id
+    ${whereSql}
+  `;
+
+  const dataQuery = `
+    SELECT
+      os.*,
+      u.nome AS solicitante_nome,
+      TIMESTAMPDIFF(MINUTE, NOW(), os.prazo_limite) AS sla_minutos_restantes,
+      CASE
+        WHEN os.status = 'Concluída'
+             AND os.prazo_limite IS NOT NULL
+             AND os.data_fechamento IS NOT NULL
+          THEN TIMESTAMPDIFF(MINUTE, os.prazo_limite, os.data_fechamento)
+        ELSE NULL
+      END AS sla_minutos_conclusao
+    ${baseFrom}
+    ORDER BY ${sortColumn} ${sortDir}
+    LIMIT ? OFFSET ?
+  `;
+
+  const countQuery = `
+    SELECT COUNT(*) AS total
+    ${baseFrom}
+  `;
+
+  const [rows] = await pool.query(dataQuery, [...whereParams, safePageSize, offset]);
+  const [countRows] = await pool.query(countQuery, whereParams);
+  const total = Number(countRows[0]?.total || 0);
+
+  return {
+    rows,
+    total,
+    page: safePage,
+    pageSize: safePageSize,
+  };
 };
 
 // Atualiza status de uma OS
@@ -173,8 +330,8 @@ exports.editar = async ({ id, setor, tipo_servico, descricao, status }) => {
 };
 
 // Exclui OS
-exports.excluir = async (id) => {
-  await pool.query('DELETE FROM ordens_servico WHERE id = ?', [id]);
+exports.excluir = async (id, db = pool) => {
+  await db.query('DELETE FROM ordens_servico WHERE id = ?', [id]);
 };
 
 // Busca OS por id
@@ -185,6 +342,29 @@ exports.findById = async (id) => {
      JOIN usuarios u ON os.solicitante_id = u.id
      WHERE os.id = ?`,
     [id]
+  );
+  return rows[0];
+};
+
+// Busca uma OS pública pelo token de acompanhamento
+exports.findByTokenPublic = async (token) => {
+  const [rows] = await pool.query(
+    `SELECT
+      os.id,
+      os.token,
+      os.setor,
+      os.tipo_servico,
+      os.descricao,
+      os.status,
+      os.resolucao,
+      os.data_criacao,
+      os.data_fechamento,
+      u.nome AS solicitante
+    FROM ordens_servico os
+    JOIN usuarios u ON os.solicitante_id = u.id
+    WHERE os.token = ?
+    LIMIT 1`,
+    [token]
   );
   return rows[0];
 };

@@ -4,16 +4,18 @@
   <meta charset="UTF-8">
   <title>Página não encontrada</title>
   <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-    h1 { font-size: 48px; color: #c0392b; }
-    p { font-size: 18px; }
-    a { text-decoration: none; color: #3498db; font-weight: bold; }
-  </style>
 </head>
 <body>
-  <h1>404</h1>
-  <p>Ops! A página <b><%= url %></b> não foi encontrada.</p>
-  <p><a href="/">Voltar para a página inicial</a></p>
+  <main class="http-error-page error-404">
+    <section class="http-error-card">
+      <h1 class="http-error-code">404</h1>
+      <h2 class="http-error-title">Página não encontrada</h2>
+      <p class="http-error-text">Ops! A URL abaixo não existe no sistema.</p>
+      <div class="http-error-details"><%= url %></div>
+      <div class="http-error-actions">
+        <a href="/" class="btn">Voltar para a página inicial</a>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

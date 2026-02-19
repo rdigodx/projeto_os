@@ -91,16 +91,52 @@
 
 .graficos-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.7rem;
-  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
 }
 
 .grafico-item {
   background-color: var(--cor-container);
-  padding: 2rem;
+  padding: 1.75rem;
   border-radius: var(--borda-radius);
   box-shadow: var(--sombra-caixa);
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
+}
+
+.grafico-item h2 {
+  font-size: 1rem;
+  color: #2f3d50;
+  margin-bottom: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.grafico-item canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  flex: 1 1 auto;
+  display: block;
+}
+
+@media (max-width: 900px) {
+  .graficos-container {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .grafico-item {
+    min-height: 420px;
+  }
+
+  .grafico-item canvas {
+    min-height: 320px;
+  }
 }
 
 /* ======================================================
@@ -191,6 +227,61 @@
   margin-bottom: 2rem;
 }
 
+.tabela-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.tabela-filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.8rem;
+  align-items: end;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filtro-busca {
+  grid-column: span 2;
+}
+
+.filtro-item label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #516175;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.tabela-filtros input,
+.tabela-filtros select {
+  min-height: 38px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #ccd5df;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2937;
+}
+
+.tabela-filtros input:focus,
+.tabela-filtros select:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 2px rgba(0, 68, 136, 0.15);
+}
+
+.tabela-resumo {
+  margin: 0;
+  color: #4a5b70;
+  font-size: 0.92rem;
+}
+
 .tabela-container {
   overflow-x: auto;
 }
@@ -212,7 +303,102 @@
 .status-nova { background-color: var(--cor-sucesso); }
 .status-pendente { background-color: #ffc107; color: #212529; }
 .status-concluida { background-color: var(--cor-secundaria); }
+.status-concluido { background-color: var(--cor-secundaria); }
 .status-fora_prazo { background-color: var(--cor-perigo); }
+.status-fora_do_prazo { background-color: var(--cor-perigo); }
+.status-desconhecido { background-color: #6c757d; }
+
+.prioridade-badge,
+.sla-badge {
+  display: inline-block;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.prioridade-baixa {
+  background: #e2e8f0;
+  color: #1f2937;
+}
+
+.prioridade-media {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.prioridade-alta {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.prioridade-critica {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.prioridade-desconhecida {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.sla-ok {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.sla-alerta {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.sla-estourado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.sla-concluido,
+.sla-concluido-ok {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.sla-sem-prazo {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.paginacao-backend {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.paginacao-form {
+  margin: 0;
+}
+
+.paginacao-status {
+  font-size: 0.9rem;
+  color: #475569;
+  min-width: 140px;
+  text-align: center;
+}
+
+.paginacao-backend .btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .filtro-busca {
+    grid-column: span 1;
+  }
+}
 
 /* ======================================================
    MODAL
@@ -264,6 +450,16 @@
   border: 1px solid #ccc;
   resize: vertical;
   min-height: 140px;
+}
+
+.modal textarea.input-error {
+  border-color: var(--cor-perigo);
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+  background: #fff5f5;
+}
+
+.modal-form-feedback {
+  margin-bottom: 0.8rem;
 }
 
 /* ======================================================

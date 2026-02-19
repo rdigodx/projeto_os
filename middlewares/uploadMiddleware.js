@@ -23,6 +23,8 @@ const fileFilter = (req, file, cb) => {
     'image/jpeg',
     'image/png',
     'image/jpg',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-excel',
     'text/plain'

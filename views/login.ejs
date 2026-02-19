@@ -31,8 +31,10 @@
     <img src="/images/logo.png" class="login-logo" alt="Logo">
 
     <%- include('partials/messages') %>
+    <div id="loginFormFeedback" class="login-feedback-slot" aria-live="polite"></div>
 
     <form id="loginForm" action="/login" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
       <div class="form-group">
         <input type="text" name="usuario" placeholder="Usuário" required>

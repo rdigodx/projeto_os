@@ -1,7 +1,6 @@
-// Carrega variáveis do arquivo .env
 require('dotenv').config();
 
-// Importações principais
+const crypto = require('crypto');
 const express = require('express');
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -9,26 +8,56 @@ const path = require('path');
 const helmet = require('helmet');
 const favicon = require('serve-favicon');
 const { logger } = require('./utils/logger');
+const { attachCsrfToken } = require('./middlewares/csrfMiddleware');
+const { createSessionStore } = require('./config/sessionStore');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || '0.0.0.0';
+const DEFAULT_PORT = Number(process.env.PORT || 5000);
+const DEFAULT_HOST = process.env.HOST || '0.0.0.0';
 const isProduction = process.env.NODE_ENV === 'production';
+const sessionSecret = process.env.SECRET || 'dev-only-secret-change-me';
+const sessionCookieName = 'os.sid';
+const { mode: sessionStoreMode, store: sessionStore } = createSessionStore({ isProduction });
 
-// ------------------- MIDDLEWARES -------------------
+if (!process.env.SECRET) {
+  logger.warn('Variavel SECRET nao definida. Configure um valor forte no .env.');
+  if (isProduction) {
+    throw new Error('A variavel de ambiente SECRET e obrigatoria em producao.');
+  }
+}
 
-// Middleware de log de requisições com Winston
+if (isProduction && sessionStoreMode === 'memory') {
+  logger.warn('SESSION_STORE=memory em producao. Recomenda-se SESSION_STORE=mysql para persistencia.');
+}
+
+if (sessionStoreMode === 'mysql' && typeof sessionStore.ready === 'function') {
+  sessionStore.ready().catch((err) => {
+    logger.error('Falha ao inicializar tabela de sessao MySQL:', err);
+    if (isProduction) {
+      process.exit(1);
+    }
+  });
+}
+
+if (process.env.TRUST_PROXY === 'true' || isProduction) {
+  app.set('trust proxy', 1);
+}
+
 app.use((req, res, next) => {
-  const serviceName = process.env.SERVICE_NAME || 'os-service'; // Define o nome do serviço, pode ser configurado via .env
+  const serviceName = process.env.SERVICE_NAME || 'os-service';
   logger.info(`HTTP ${req.method} ${req.url}`, {
     ip: req.ip,
-    service: serviceName, // Adiciona o nome do serviço ao log
+    service: serviceName,
     userAgent: req.get('User-Agent'),
   });
   next();
 });
 
-// Segurança de cabeçalhos HTTP (APENAS EM PRODUÇÃO)
+app.use((req, res, next) => {
+  res.locals.cspNonce = crypto.randomBytes(16).toString('base64');
+  next();
+});
+
 if (isProduction) {
   app.use(
     helmet({
@@ -40,6 +69,8 @@ if (isProduction) {
             'https://cdn.jsdelivr.net',
             'https://code.jquery.com',
             'https://cdn.datatables.net',
+            'https://unpkg.com',
+            (req, res) => `'nonce-${res.locals.cspNonce}'`,
           ],
           styleSrc: [
             "'self'",
@@ -47,6 +78,7 @@ if (isProduction) {
             'https://fonts.googleapis.com',
             'https://cdnjs.cloudflare.com',
             'https://cdn.datatables.net',
+            'https://unpkg.com',
           ],
           fontSrc: ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
           imgSrc: ["'self'", 'data:'],
@@ -57,100 +89,109 @@ if (isProduction) {
   );
 }
 
-// Servir arquivos estáticos (CSS, JS, imagens)
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Middleware para favicon
 app.use(favicon(path.join(__dirname, 'public', 'images', 'logo.png')));
-
-// Parser de formulários (POST) e JSON
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Configura sessão do usuário
-// O segredo da sessão agora é obrigatório (sem fallback)
-app.use(session({
-  secret: process.env.SECRET, 
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 1 dia
-    secure: isProduction,
-    sameSite: 'lax'
-  }
-}));
+app.use(
+  session({
+    name: sessionCookieName,
+    secret: sessionSecret,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    proxy: isProduction,
+    cookie: {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      secure: isProduction,
+      sameSite: 'lax',
+    },
+  })
+);
 
-// Flash messages
 app.use(flash());
 app.use((req, res, next) => {
-  res.locals.messages = req.flash(); // disponível em todos os templates
+  res.locals.messages = req.flash();
   next();
 });
 
-// Motor de visualização EJS
+app.use(attachCsrfToken);
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-
-// ------------------- ROTAS -------------------
 app.use('/', require('./routes/indexRoutes'));
-// Adicione esta linha para que o Express confie nos cabeçalhos de proxy (se estiver usando um proxy reverso)
-// Rotas de autenticação
 const authRoutes = require('./routes/loginRoutes');
 app.use('/login', authRoutes);
-app.get('/logout', authRoutes); // Reutiliza o mesmo roteador para a rota de logout
+const loginController = require('./controllers/loginController');
+app.get('/logout', loginController.logout);
 app.use('/painel', require('./routes/painelRoutes'));
 app.use('/os', require('./routes/osRoutes'));
 
-// Rota de sucesso agora usa um controller específico
 const sucessoController = require('./controllers/sucessoController');
 app.get('/sucesso', sucessoController.showSucesso);
-
 app.use('/relatorio', require('./routes/relatorioRoutes'));
 
-// ------------------- ERROS -------------------
+if (process.env.NODE_ENV === 'test') {
+  const { isAuth } = require('./middlewares/authMiddleware');
+  app.get('/_test/auth-check', isAuth, (req, res) => {
+    res.status(204).end();
+  });
+}
 
-// Página 404
 app.use((req, res) => {
   res.status(404).render('404', { url: req.originalUrl });
 });
 
-// Página 500
 app.use((err, req, res, next) => {
-  logger.error(err.stack); // Sempre loga o erro completo para depuração
+  logger.error(err.stack);
 
-  // Em produção, envia uma mensagem genérica para o usuário.
   if (isProduction) {
-    res.status(500).render('error', { error: 'Ocorreu um erro interno do servidor.' });
-  } else {
-    // Em desenvolvimento, exibe a mensagem de erro detalhada.
-    res.status(500).render('error', { error: err.message });
+    return res.status(500).render('error', { error: 'Ocorreu um erro interno do servidor.' });
   }
+
+  return res.status(500).render('error', { error: err.message });
 });
 
-// ------------------- SERVIDOR -------------------
-const server = app.listen(PORT, HOST, () => {
-  logger.info(`Servidor rodando`);
-  // Melhoria: Em produção, o SECRET deve ser obrigatório para a segurança da sessão.
-  if (!process.env.SECRET) {
-    const secretWarning = 'ERRO CRÍTICO: A variável de ambiente "SECRET" não está definida. A sessão NÃO será segura.';
-    logger.error(secretWarning);
-    if (isProduction) {
-      process.exit(1); // Encerrar a aplicação em produção se o SECRET não estiver definido
+const bindServerErrorHandler = (server, port) => {
+  server.on('error', (error) => {
+    if (error.syscall !== 'listen') {
+      throw error;
     }
-  }
-});
 
-server.on('error', (error) => {
-  if (error.syscall !== 'listen') {
+    if (error.code === 'EADDRINUSE') {
+      logger.error(`A porta ${port} ja esta em uso. Verifique outra instancia em execucao.`);
+      process.exit(1);
+    }
     throw error;
-  }
+  });
+};
 
+const startServer = (options = {}) => {
+  const port = options.port ?? DEFAULT_PORT;
+  const host = options.host ?? DEFAULT_HOST;
 
-  if (error.code === 'EADDRINUSE') {
-    logger.error(`A porta ${PORT} já está em uso. Verifique se outra instância do servidor ou outro programa está rodando.`);
-    process.exit(1);
-  }
-  throw error;
-});
+  const server = app.listen(port, host, () => {
+    const address = server.address();
+    const actualPort = typeof address === 'object' && address ? address.port : port;
+    logger.info(`Servidor rodando em ${host}:${actualPort}`);
+  });
+
+  bindServerErrorHandler(server, port);
+  return server;
+};
+
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = {
+  app,
+  startServer,
+  sessionStore,
+  sessionStoreMode,
+  sessionSecret,
+  sessionCookieName,
+};

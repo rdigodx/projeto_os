@@ -61,6 +61,8 @@ main.main-container {
 .token-container {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 1rem; /* Espaçamento entre o token e o botão */
 }
 
@@ -85,6 +87,11 @@ main.main-container {
   transform: translateY(-2px);
 }
 
+.copy-btn:disabled {
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* Mensagem do contador regressivo. */
 .countdown {
   margin-top: 1rem;
@@ -95,6 +102,10 @@ main.main-container {
 /* Contêiner para os botões de ação na parte inferior. */
 .action-container {
   margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 /* Estilo para o botão de navegação "Voltar ao Início". */

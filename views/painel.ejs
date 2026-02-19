@@ -18,22 +18,20 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/images/logo.png">
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Tabulator -->
-  <link href="https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator_modern.min.css" rel="stylesheet">
-  <script src="https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"></script>
+  <!-- Vendor local -->
+  <link href="/vendor/tabulator-lite.css" rel="stylesheet">
+  <script src="/vendor/chart-lite.js"></script>
+  <script src="/vendor/tabulator-lite.js"></script>
 
   <!-- Dados vindos do backend -->
-  <script>
+  <script nonce="<%= cspNonce %>">
     const qtdTotal = Number("<%= qtd_total || 0 %>");
     const qtdNova = Number("<%= qtd_nova || 0 %>");
     const qtdPendente = Number("<%= qtd_pendente || 0 %>");
     const qtdConcluida = Number("<%= qtd_concluida || 0 %>");
     const qtdForaPrazo = Number("<%= qtd_fora_prazo || 0 %>");
-    const usuariosTop5 = <%- JSON.stringify(usuarios_top5 || []) %>;
-    const ordensData = <%- JSON.stringify(ordens || []) %>;
+    const usuariosTop5 = <%- usuarios_top5_json %>;
+    const ordensData = <%- ordens_json %>;
   </script>
 </head>
 
@@ -66,22 +64,22 @@
       <span class="numero"><%= qtd_total %></span>
     </a>
 
-    <a href="/painel?filtro=novas" class="card card-novas">
+    <a href="/painel?status=nova" class="card card-novas">
       <h3><i class="fas fa-plus-circle"></i> OS Novas</h3>
       <span class="numero"><%= qtd_nova %></span>
     </a>
 
-    <a href="/painel?filtro=pendentes" class="card card-pendentes">
+    <a href="/painel?status=pendente" class="card card-pendentes">
       <h3><i class="fas fa-hourglass-half"></i> OS Pendentes</h3>
       <span class="numero"><%= qtd_pendente %></span>
     </a>
 
-    <a href="/painel?filtro=concluidas" class="card card-concluidas">
+    <a href="/painel?status=concluida" class="card card-concluidas">
       <h3><i class="fas fa-check-circle"></i> OS Concluídas</h3>
       <span class="numero"><%= qtd_concluida %></span>
     </a>
 
-    <a href="/painel?filtro=fora_prazo" class="card card-fora-prazo">
+    <a href="/painel?status=fora_prazo" class="card card-fora-prazo">
       <h3><i class="fas fa-exclamation-triangle"></i> Fora do Prazo</h3>
       <span class="numero"><%= qtd_fora_prazo %></span>
     </a>
@@ -126,6 +124,7 @@
       </h3>
 
       <form method="POST" action="/relatorio">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
         <div class="form-group">
           <label for="mes">
@@ -173,7 +172,160 @@
       Ordens de Serviço
     </h2>
 
+    <div class="tabela-toolbar">
+      <form method="GET" action="/painel" class="tabela-filtros">
+        <div class="filtro-item filtro-busca">
+          <label for="filtro-q">Busca</label>
+          <input
+            id="filtro-q"
+            type="text"
+            name="q"
+            placeholder="Token, solicitante, setor, tipo..."
+            value="<%= table_query.q || '' %>">
+        </div>
+
+        <div class="filtro-item">
+          <label for="filtro-status">Status</label>
+          <select id="filtro-status" name="status">
+            <option value="">Todos</option>
+            <option value="nova" <%= table_query.status === 'nova' ? 'selected' : '' %>>Nova</option>
+            <option value="pendente" <%= table_query.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+            <option value="concluida" <%= table_query.status === 'concluida' ? 'selected' : '' %>>Concluída</option>
+            <option value="fora_prazo" <%= table_query.status === 'fora_prazo' ? 'selected' : '' %>>Fora do Prazo</option>
+          </select>
+        </div>
+
+        <div class="filtro-item">
+          <label for="filtro-prioridade">Prioridade</label>
+          <select id="filtro-prioridade" name="prioridade">
+            <option value="">Todas</option>
+            <option value="baixa" <%= table_query.prioridade === 'baixa' ? 'selected' : '' %>>Baixa</option>
+            <option value="media" <%= table_query.prioridade === 'media' ? 'selected' : '' %>>Média</option>
+            <option value="alta" <%= table_query.prioridade === 'alta' ? 'selected' : '' %>>Alta</option>
+            <option value="critica" <%= table_query.prioridade === 'critica' ? 'selected' : '' %>>Crítica</option>
+          </select>
+        </div>
+
+        <div class="filtro-item">
+          <label for="filtro-sla">SLA</label>
+          <select id="filtro-sla" name="sla">
+            <option value="">Todos</option>
+            <option value="no_prazo" <%= table_query.sla === 'no_prazo' ? 'selected' : '' %>>No prazo</option>
+            <option value="vence_hoje" <%= table_query.sla === 'vence_hoje' ? 'selected' : '' %>>Vence em até 2h</option>
+            <option value="estourado" <%= table_query.sla === 'estourado' ? 'selected' : '' %>>Estourado</option>
+          </select>
+        </div>
+
+        <div class="filtro-item">
+          <label for="filtro-sort">Ordenar</label>
+          <select id="filtro-sort" name="sort">
+            <option value="data" <%= table_query.sort === 'data' ? 'selected' : '' %>>Data</option>
+            <option value="id" <%= table_query.sort === 'id' ? 'selected' : '' %>>ID</option>
+            <option value="status" <%= table_query.sort === 'status' ? 'selected' : '' %>>Status</option>
+            <option value="prioridade" <%= table_query.sort === 'prioridade' ? 'selected' : '' %>>Prioridade</option>
+            <option value="prazo" <%= table_query.sort === 'prazo' ? 'selected' : '' %>>Prazo SLA</option>
+            <option value="solicitante" <%= table_query.sort === 'solicitante' ? 'selected' : '' %>>Solicitante</option>
+            <option value="setor" <%= table_query.sort === 'setor' ? 'selected' : '' %>>Setor</option>
+            <option value="tipo" <%= table_query.sort === 'tipo' ? 'selected' : '' %>>Tipo Serviço</option>
+            <option value="tecnico" <%= table_query.sort === 'tecnico' ? 'selected' : '' %>>Técnico</option>
+          </select>
+        </div>
+
+        <div class="filtro-item">
+          <label for="filtro-dir">Direção</label>
+          <select id="filtro-dir" name="dir">
+            <option value="desc" <%= table_query.dir === 'desc' ? 'selected' : '' %>>Descendente</option>
+            <option value="asc" <%= table_query.dir === 'asc' ? 'selected' : '' %>>Ascendente</option>
+          </select>
+        </div>
+
+        <div class="filtro-item">
+          <label for="filtro-page-size">Itens / página</label>
+          <select id="filtro-page-size" name="pageSize">
+            <% page_size_options.forEach((option) => { %>
+              <option value="<%= option %>" <%= Number(table_query.pageSize) === Number(option) ? 'selected' : '' %>>
+                <%= option %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+
+        <input type="hidden" name="page" value="1">
+
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="fas fa-filter"></i>
+          Aplicar
+        </button>
+
+        <a href="/painel" class="btn btn-danger btn-sm">
+          <i class="fas fa-eraser"></i>
+          Limpar
+        </a>
+      </form>
+
+      <p class="tabela-resumo">
+        Mostrando <strong><%= table_meta.inicio %></strong> a <strong><%= table_meta.fim %></strong>
+        de <strong><%= table_meta.total %></strong> OS
+      </p>
+    </div>
+
     <div id="tabela-os"></div>
+
+    <%
+      const currentPage = Number(table_query.page || 1);
+      const totalPages = Number(table_meta.totalPages || 1);
+      const canPrev = currentPage > 1;
+      const canNext = currentPage < totalPages;
+      const prevPage = canPrev ? currentPage - 1 : 1;
+      const nextPage = canNext ? currentPage + 1 : totalPages;
+      const persistedQuery = {
+        q: table_query.q || '',
+        status: table_query.status || '',
+        prioridade: table_query.prioridade || '',
+        sla: table_query.sla || '',
+        sort: table_query.sort || 'data',
+        dir: table_query.dir || 'desc',
+        pageSize: table_query.pageSize || 25
+      };
+    %>
+
+    <div class="paginacao-backend">
+      <form method="GET" action="/painel" class="paginacao-form">
+        <% Object.entries(persistedQuery).forEach(([name, value]) => { if (value) { %>
+          <input type="hidden" name="<%= name %>" value="<%= value %>">
+        <% } }) %>
+        <input type="hidden" name="page" value="1">
+        <button type="submit" class="btn btn-sm" <%= canPrev ? '' : 'disabled' %>>Primeira</button>
+      </form>
+
+      <form method="GET" action="/painel" class="paginacao-form">
+        <% Object.entries(persistedQuery).forEach(([name, value]) => { if (value) { %>
+          <input type="hidden" name="<%= name %>" value="<%= value %>">
+        <% } }) %>
+        <input type="hidden" name="page" value="<%= prevPage %>">
+        <button type="submit" class="btn btn-sm" <%= canPrev ? '' : 'disabled' %>>Anterior</button>
+      </form>
+
+      <span class="paginacao-status">
+        Página <strong><%= currentPage %></strong> de <strong><%= totalPages %></strong>
+      </span>
+
+      <form method="GET" action="/painel" class="paginacao-form">
+        <% Object.entries(persistedQuery).forEach(([name, value]) => { if (value) { %>
+          <input type="hidden" name="<%= name %>" value="<%= value %>">
+        <% } }) %>
+        <input type="hidden" name="page" value="<%= nextPage %>">
+        <button type="submit" class="btn btn-sm" <%= canNext ? '' : 'disabled' %>>Próxima</button>
+      </form>
+
+      <form method="GET" action="/painel" class="paginacao-form">
+        <% Object.entries(persistedQuery).forEach(([name, value]) => { if (value) { %>
+          <input type="hidden" name="<%= name %>" value="<%= value %>">
+        <% } }) %>
+        <input type="hidden" name="page" value="<%= totalPages %>">
+        <button type="submit" class="btn btn-sm" <%= canNext ? '' : 'disabled' %>>Última</button>
+      </form>
+    </div>
 
     <% ordens.forEach(os => { %>
       <div id="modal-<%= os.id %>" class="modal">
@@ -183,6 +335,8 @@
           <h3>Resolução da OS #<%= os.id %></h3>
 
           <form method="POST" action="/os/fechar/<%= os.id %>">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <div class="modal-form-feedback" aria-live="polite"></div>
             <textarea
               name="resolucao"
               placeholder="Descreva a resolução do chamado..."

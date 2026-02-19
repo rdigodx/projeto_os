@@ -34,8 +34,11 @@
   <!-- MAIN -->
   <main class="main-container">
     <section class="form-container">
+      <%- include('partials/alerts') %>
+      <div id="clientFormFeedback" class="form-feedback-slot" aria-live="polite"></div>
 
       <form method="POST" action="/os/criar" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
         <!-- GRID ERP -->
         <div class="form-grid">
@@ -106,6 +109,19 @@
               placeholder="Ex: Manutenção, Software..."
               required
             />
+          </div>
+
+          <!-- PRIORIDADE -->
+          <div class="form-group">
+            <label class="required">
+              <i class="fas fa-bolt"></i> Prioridade
+            </label>
+            <select name="prioridade" required>
+              <option value="media" selected>Média (5h)</option>
+              <option value="baixa">Baixa (10h)</option>
+              <option value="alta">Alta (2h)</option>
+              <option value="critica">Crítica (1h)</option>
+            </select>
           </div>
 
           <!-- DESCRIÇÃO -->

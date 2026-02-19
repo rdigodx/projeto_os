@@ -1,96 +1,91 @@
-/**
- * public/js/sucessoScripts.js
- *
- * Este script gerencia a interatividade na página de sucesso.
- */
-
-// Adiciona um ouvinte de eventos que espera o DOM (a estrutura da página) ser completamente carregado.
 document.addEventListener('DOMContentLoaded', () => {
-  // Seleciona os elementos HTML necessários e os armazena em constantes.
-  const tokenHighlight = document.querySelector('.token-highlight');
   const countdownElement = document.querySelector('.countdown span');
   const tokenSpan = document.getElementById('token');
+  const copyButton = document.getElementById('copyTokenBtn');
 
+  const setCopyButtonState = (state) => {
+    if (!copyButton) {
+      return;
+    }
 
-  // --- Funcionalidade de Copiar Token ---
-  // Verifica se os elementos para o token existem na página.
-  if (tokenHighlight && tokenSpan) {
-    // Pega o texto do token e remove espaços em branco extras.
+    if (state === 'success') {
+      copyButton.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+      copyButton.disabled = true;
+      copyButton.style.backgroundColor = 'var(--cor-sucesso)';
+      return;
+    }
+
+    if (state === 'error') {
+      copyButton.innerHTML = '<i class="fas fa-times"></i> Erro!';
+      copyButton.disabled = true;
+      copyButton.style.backgroundColor = 'var(--cor-perigo)';
+      return;
+    }
+
+    copyButton.innerHTML = '<i class="fas fa-copy"></i> Copiar';
+    copyButton.disabled = false;
+    copyButton.style.backgroundColor = '';
+  };
+
+  const fallbackCopy = (text) => {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'fixed';
+    textarea.style.top = '-9999px';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+
+    let copied = false;
+    try {
+      copied = document.execCommand('copy');
+    } catch (err) {
+      copied = false;
+    }
+
+    document.body.removeChild(textarea);
+    return copied;
+  };
+
+  const copyToken = async (text) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    return fallbackCopy(text);
+  };
+
+  if (copyButton && tokenSpan) {
     const token = tokenSpan.textContent.trim();
 
-    // Cria um elemento de botão dinamicamente.
-    // Fazer isso via JS garante que o botão só apareça se o script for executado com sucesso.
-    console.log('Token span:', tokenSpan);
-    console.log('Token text on load:', tokenSpan.textContent);
-    const copyButton = document.createElement('button');
-    // Adiciona classes CSS para estilizar o botão.
-    copyButton.classList.add('btn', 'copy-btn');
-    // Define o conteúdo HTML do botão (ícone + texto).
-    copyButton.innerHTML = '<i class="fas fa-copy"></i> Copiar';
-
-    // Cria um novo contêiner flex para o token e o botão.
-    const tokenContainer = document.createElement('div');
-    tokenContainer.className = 'token-container';
-    tokenHighlight.innerHTML = ''; // Limpa o contêiner principal.
-    tokenHighlight.append(tokenContainer); // Adiciona o novo contêiner.
-
-    // Adiciona um ouvinte de evento para o clique no botão.
-    copyButton.addEventListener('click', () => {
-      // Usa a API do Clipboard do navegador para copiar o texto do token.
-      navigator.clipboard.writeText(token).then(() => {
-        // --- SUCESSO AO COPIAR ---
-        // Altera o texto e o ícone do botão para dar feedback ao usuário.
-        copyButton.innerHTML = '<i class="fas fa-check"></i> Copiado!';
-        // Desabilita o botão para evitar cliques repetidos.
-        copyButton.disabled = true;
-        // Muda a cor de fundo para verde (sucesso).
-        copyButton.style.backgroundColor = 'var(--cor-sucesso)';
-
-        // Define um temporizador para reverter o botão ao seu estado original após 2 segundos.
-        setTimeout(() => {
-          copyButton.innerHTML = '<i class="fas fa-copy"></i> Copiar';
-          copyButton.disabled = false;
-          copyButton.style.backgroundColor = ''; // Remove a cor de fundo inline, voltando ao estilo do CSS.
-        }, 2000);
-      }).catch(err => {
-        // --- ERRO AO COPIAR ---
-        console.error('Falha ao copiar o token: ', err);
-        // Altera o botão para fornecer feedback de erro.
-        copyButton.innerHTML = '<i class="fas fa-times"></i> Erro!';
-        copyButton.style.backgroundColor = 'var(--cor-perigo)';
-        copyButton.disabled = true;
-        // Define um temporizador para reverter o botão ao estado original.
-        setTimeout(() => {
-          copyButton.innerHTML = '<i class="fas fa-copy"></i> Copiar';
-          copyButton.disabled = false;
-          copyButton.style.backgroundColor = '';
-        }, 2000);
-      });
+    copyButton.addEventListener('click', async () => {
+      try {
+        const copied = await copyToken(token);
+        if (!copied) {
+          throw new Error('Nao foi possivel copiar token.');
+        }
+        setCopyButtonState('success');
+      } catch (err) {
+        setCopyButtonState('error');
+      } finally {
+        setTimeout(() => setCopyButtonState('idle'), 2000);
+      }
     });
-
-    // Move o span do token e o botão para dentro do novo contêiner.
-    // Isso garante o alinhamento correto e o espaçamento definido em '.token-container'.
-    tokenContainer.append(tokenSpan, copyButton);
   }
 
-  // --- Contador Regressivo para Redirecionamento ---
-  // Verifica se o elemento do contador existe.
   if (countdownElement) {
-    // Define o tempo inicial em segundos.
-    let timeLeft = 15; // Tempo em segundos
+    let timeLeft = Number(countdownElement.textContent) || 15;
 
-    // Cria um intervalo que executa uma função a cada 1000 milissegundos (1 segundo).
     const countdownInterval = setInterval(() => {
-      timeLeft--;
-      // Atualiza o texto do contador na página.
+      timeLeft -= 1;
       countdownElement.textContent = timeLeft;
 
-      // Quando o tempo chegar a zero.
       if (timeLeft <= 0) {
-        clearInterval(countdownInterval); // Para o contador.
-        // Redireciona o navegador para a página inicial.
+        clearInterval(countdownInterval);
         window.location.href = '/';
       }
-    }, 1000); // Atualiza a cada segundo
+    }, 1000);
   }
 });

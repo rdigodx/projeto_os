@@ -4,22 +4,22 @@
   <meta charset="UTF-8">
   <title>Erro interno</title>
   <link rel="stylesheet" href="/css/style.css">
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-    h1 { font-size: 48px; color: #e67e22; }
-    p { font-size: 18px; }
-    .details { margin-top: 20px; color: #555; }
-    a { text-decoration: none; color: #3498db; font-weight: bold; }
-  </style>
 </head>
 <body>
-  <h1>500</h1>
-  <p>Algo deu errado no servidor.</p>
-  <% if (error) { %>
-    <div class="details">
-      <p><strong>Detalhes:</strong> <%= error %></p>
-    </div>
-  <% } %>
-  <p><a href="/">Voltar para a página inicial</a></p>
+  <main class="http-error-page error-500">
+    <section class="http-error-card">
+      <h1 class="http-error-code">500</h1>
+      <h2 class="http-error-title">Erro interno no servidor</h2>
+      <p class="http-error-text">Algo deu errado durante o processamento da sua solicitação.</p>
+      <% if (error) { %>
+        <div class="http-error-details">
+          <strong>Detalhes:</strong> <%= error %>
+        </div>
+      <% } %>
+      <div class="http-error-actions">
+        <a href="/" class="btn">Voltar para a página inicial</a>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

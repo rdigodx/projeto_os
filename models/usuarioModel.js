@@ -1,8 +1,8 @@
 const pool = require('../config/db');
 
 // Busca um usuário pelo nome
-exports.findByNome = async (nome) => {
-  const [rows] = await pool.query(
+exports.findByNome = async (nome, db = pool) => {
+  const [rows] = await db.query(
     'SELECT * FROM usuarios WHERE nome = ?',
     [nome]
   );
@@ -10,8 +10,8 @@ exports.findByNome = async (nome) => {
 };
 
 // Cria um novo usuário no banco de dados
-exports.create = async ({ nome, email }) => {
-  const [result] = await pool.query(
+exports.create = async ({ nome, email }, db = pool) => {
+  const [result] = await db.query(
     'INSERT INTO usuarios (nome, email) VALUES (?, ?)',
     [nome, email]
   );
@@ -19,8 +19,8 @@ exports.create = async ({ nome, email }) => {
 };
 
 // Atualiza o email do usuário se ainda não tiver
-exports.updateEmailIfEmpty = async (id, email) => {
-  const [result] = await pool.query(
+exports.updateEmailIfEmpty = async (id, email, db = pool) => {
+  const [result] = await db.query(
     `UPDATE usuarios 
      SET email = ? 
      WHERE id = ? AND (email IS NULL OR email = '')`,

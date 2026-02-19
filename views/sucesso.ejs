@@ -36,9 +36,13 @@
       <div class="token-highlight">
         <%# Tag EJS: Verifica se a variável 'token' foi passada pelo controller %>
         <% if (token) { %>
-          <%# Tag EJS: Exibe o valor da variável 'token' dentro do span %>
-          <span id="token"><%= token %></span>
-          <!-- O botão de copiar será inserido aqui dinamicamente pelo sucessoScripts.js -->
+          <div class="token-container">
+            <%# Tag EJS: Exibe o valor da variável 'token' dentro do span %>
+            <span id="token"><%= token %></span>
+            <button type="button" id="copyTokenBtn" class="btn copy-btn" aria-label="Copiar token">
+              <i class="fas fa-copy"></i> Copiar
+            </button>
+          </div>
         <% } else { %>
           <p class="error-message">Não foi possível recuperar o token.</p>
         <% } %>
@@ -51,6 +55,9 @@
 
       <!-- Contêiner para o botão de ação -->
       <div class="action-container">
+        <% if (token) { %>
+          <a href="/?token=<%= token %>" class="botao-nav">Consultar esta OS</a>
+        <% } %>
         <a href="/" class="botao-nav">Voltar ao Início</a>
       </div>
     </div>

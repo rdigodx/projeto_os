@@ -41,6 +41,10 @@ main {
   margin-bottom: 20px;
 }
 
+.login-feedback-slot {
+  margin-bottom: 0.9rem;
+}
+
 /* ===== INPUTS ===== */
 .form-group {
   position: relative;
@@ -66,6 +70,15 @@ main {
 .form-group input:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+}
+
+.form-group input.input-error {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.35);
+  background: #fff4f4;
+}
+
+.form-group input.input-error + i {
+  color: #dc3545;
 }
 
 /* 👁 Mostrar senha */

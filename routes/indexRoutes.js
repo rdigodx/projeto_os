@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const indexController = require('../controllers/indexController');
+const { isAuth } = require('../middlewares/authMiddleware');
 
 // Rota para a página inicial
 router.get('/', indexController.index);
@@ -9,6 +10,6 @@ router.get('/', indexController.index);
 router.get('/nova_os', indexController.novaOsForm);
 
 // Rota pública da API para listar OSs (usada pelo indexScripts.js)
-router.get('/os/listar', indexController.listarOs);
+router.get('/os/listar', isAuth, indexController.listarOs);
 
 module.exports = router;

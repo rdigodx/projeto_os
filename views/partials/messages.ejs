@@ -1,12 +1,1 @@
-<% if (typeof messages !== 'undefined' && Object.keys(messages).length > 0) { %>
-  <% Object.keys(messages).forEach(function(type) { %>
-    <% messages[type].forEach(function(msg) { %>
-      <div class="alert alert-<%= type === 'error' ? 'danger' : type %> alert-dismissible fade show" role="alert">
-        <%= msg %>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    <% }) %>
-  <% }) %>
-<% } %>
+<%- include('alerts') %>
